@@ -1,0 +1,61 @@
+// Python Code Flow Diagram
+digraph {
+	show_result [label="show_result()"]
+	readDatabase [label="readDatabase()"]
+	createPage [label="createPage()"]
+	update_database [label="update_database()"]
+	move_lock [label="move_lock()"]
+	show_next [label="show_next()"]
+	show_prev [label="show_prev()"]
+	toggle_overrideredirect [label="toggle_overrideredirect()"]
+	toggle_size [label="toggle_size()"]
+	update_timer [label="update_timer()"]
+	toggle_timer [label="toggle_timer()"]
+	select_project [label="select_project()"]
+	round_button [label="round_button()"]
+	on_key_press [label="on_key_press()"]
+	handle_ctrl_up [label="handle_ctrl_up()"]
+	handle_ctrl_down [label="handle_ctrl_down()"]
+	Client -> range
+	range -> select_project
+	select_project -> len
+	len -> len
+	len -> len
+	len -> show_result
+	show_result -> print
+	print -> update_database
+	update_database -> print
+	print -> str
+	str -> readDatabase
+	readDatabase -> print
+	print -> toggle_overrideredirect
+	toggle_overrideredirect -> len
+	len -> len
+	len -> show_result
+	show_result -> show_result
+	show_result -> int
+	int -> str
+	str -> str
+	str -> print
+	print -> int
+	int -> int
+	int -> print
+	print -> print
+	print -> print
+	print -> createPage
+	createPage -> round_button
+	round_button -> round_button
+	round_button -> round_button
+	round_button -> round_button
+	round_button -> round_button
+	round_button -> round_button
+	round_button -> show_prev
+	show_prev -> show_next
+	show_next -> int
+	int -> select_project
+	select_project -> print
+	print -> print
+	print -> print
+	print -> readDatabase
+	readDatabase -> show_result
+}
