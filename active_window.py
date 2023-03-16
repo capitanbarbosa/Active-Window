@@ -311,10 +311,7 @@ def select_project(project):
         content_value = current_project[0]['text']['content']
         print(f"Content value: {content_value}")
 
-        # Update the text property of the button
-        project_button.config(text=content_value)
-
-        # ... rest of the function code
+        # # Update the text property of the button
         project_button.config(
             text=content_value if content_value else "No Project")
     else:
