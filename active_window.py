@@ -105,7 +105,11 @@ def show_result(index, project):
     page = results[index]
 
     # Get the name
-    name = page['properties']['Name']['title'][0]['text']['content']
+    # name = page['properties']['Name']['title'][0]['text']['content']
+    if 'Name' in page['properties'] and page['properties']['Name']['title']:
+        name = page['properties']['Name']['title'][0]['text']['content']
+    else:
+        name = ""
 
     # Get the note
     if 'Note' in page['properties'] and page['properties']['Note']['rich_text']:
@@ -169,6 +173,8 @@ def update_database():
         name = name[1:]
     if note.startswith("📝"):
         note = note[1:]
+
+    # Create the data dictionary, excluding the "Project" property if current_project is empty
     data = {
         "properties": {
             "Name": {
@@ -188,25 +194,28 @@ def update_database():
                         }
                     }
                 ]
-            },
-            "Project": {
-                "rich_text": [
-                    {
-                        "text": {
-                            "content": current_project
-                        }
-                    }
-                ]
             }
         }
     }
-    # print("data:", data)  # debugging line
+
+    # Add the "Project" property if current_project is not empty
+    if current_project:
+        data["properties"]["Project"] = {
+            "rich_text": [
+                {
+                    "text": {
+                        "content": current_project
+                    }
+                }
+            ]
+        }
+
     # Check if the timer-mins property exists in the data for the current page
     if timer_mins is not None:
         data["properties"]["timer-mins"] = {
             "number": timer_mins
         }
-    # print("data after timer-mins check:", data)  # debugging line
+
     # Check the state of the checkbox and modify the data dictionary accordingly
     if checkbox.var.get() == 1:
         data["properties"]["Active?"] = {
@@ -216,7 +225,7 @@ def update_database():
         data["properties"]["Active?"] = {
             "checkbox": False
         }
-    # print("data after checkbox check:", data)  # debugging line
+
     # Set up the Notion API request headers using your integration token
     headers = {
         "Notion-Version": "2021-08-16",
@@ -436,21 +445,24 @@ def toggle_timer():
 #             menu.add_command(
 #                 label=project["name"], command=lambda p=project["name"]: select_project(p))
 #
-# ----------------------------------- Window creation (View) --------------------------------------
+# ----------------------------------- Window creation (Viewjmjh) --------------------------------------
 #
 root = tk.Tk()
 
 overrideredirect_enabled = True
-# Set the window size
-root.geometry("1069x70+0+1370")
+
 # Remove title bar
 root.overrideredirect(True)
 
 # Set the window to always be on top
 root.wm_attributes("-topmost", True)
 
+# Set the window size
+root.geometry("1069x70+0+1370")
+
 # Set the title of the window
 root.title("Active Window 🚀🌙⭐")
+
 
 root.config(borderwidth=0)
 root.configure(background="#1e2127")
