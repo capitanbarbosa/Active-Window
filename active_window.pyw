@@ -432,20 +432,8 @@ def toggle_timer():
         t.start()
 
 
-# def filter_projects(search_text):
-#     # Update the dropdown menu to show only the projects that match the search_text
-#     menu.delete(0, tk.END)
-#     last_status = None
-#     for project in projects:
-#         if search_text.lower() in project["name"].lower():
-#             if last_status != project["status"]:
-#                 menu.add_separator()
-#                 menu.add_command(label=project["status"], state="disabled")
-#                 last_status = project["status"]
-#             menu.add_command(
-#                 label=project["name"], command=lambda p=project["name"]: select_project(p))
 #
-# ----------------------------------- Window creation (Viewjmjh) --------------------------------------
+# ----------------------------------- Window creation (View) --------------------------------------
 #
 root = tk.Tk()
 
@@ -458,7 +446,7 @@ root.overrideredirect(True)
 root.wm_attributes("-topmost", True)
 
 # Set the window size
-root.geometry("1069x70+0+1370")
+root.geometry("1081x70+0+1370")
 
 # Set the title of the window
 root.title("Active Window 🚀🌙⭐")
