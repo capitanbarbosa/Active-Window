@@ -6,7 +6,7 @@ import time
 import threading
 from notion_client import Client
 import pprint
-
+import re
 
 #
 # ----------------------- DATA STRUCTURE - MODEL ---------------------
@@ -54,17 +54,46 @@ projects = ['']+[page['properties']['Name']['title']
 projects.sort()
 current_project = projects[0] if projects else ""
 
-
-# Print the projects arraylist
-# pprint.pprint(projects)
-
 current_project = ""
 
 #
-# ------------------ Button commands (Controller) -------------------------
+# ------------------ (Controller) -------------------------
 #
 
-# --------------------------
+
+def readDatabase(databaseId):
+    global results
+
+    # Query the database and get the results
+    results = notion.databases.query(databaseId).get("results")
+
+    # Loop through the list of results - Extraer listas de props.
+    for result in results:
+        # Get the Name value for the current result, if it exists
+        name = ""
+        if "Name" in result["properties"] and len(result["properties"]["Name"]["title"]) > 0:
+            name = result["properties"]["Name"]["title"][0]["text"]["content"]
+
+        # Get the Note value for the current result, if it exists
+        note = ""
+        if "Note" in result["properties"] and len(result["properties"]["Note"]["rich_text"]) > 0:
+            note = result["properties"]["Note"]["rich_text"][0]["text"]["content"]
+
+        # Get the Active? value for the current result, if it exists
+        active = False
+        if "Active?" in result["properties"] and result["properties"]["Active?"]["checkbox"]:
+            active = result["properties"]["Active?"]["checkbox"]
+
+        # Get the Project value for the current result, if it exists
+        project = ""  # lo imprime muy bn...
+        if "Project" in result["properties"] and len(result["properties"]["Project"]["rich_text"]) > 0:
+            project = result["properties"]["Project"]["rich_text"][0]["plain_text"]
+
+    # Set the state of the tkinter Checkbox widget to match the "Active?" column value of the current page
+    checkbox.var.set(results[current_index]
+                     ['properties']['Active?']['checkbox'])
+
+    show_result(current_index, project)
 
 
 def show_result(index, project):
@@ -74,8 +103,6 @@ def show_result(index, project):
 
     # Get the page object
     page = results[index]
-    # print(results[index]['properties']['Project']
-    #       ['rich_text'][0]['text']['content'])
 
     # Get the name
     name = page['properties']['Name']['title'][0]['text']['content']
@@ -107,11 +134,13 @@ def show_result(index, project):
     input_box.mark_set("insert", "1.0")
     checkbox.var.set(active)
 
+    selected_project = current_project
+
     # Update the text of the project_button with the name of the project
-    if current_project == "":
+    if selected_project == "":
         project_text = "No Project"
     else:
-        project_text = current_project
+        project_text = selected_project
     project_button.config(text=project_text)
 
     # Set the current project to the one displayed in the current result
@@ -126,100 +155,14 @@ def show_result(index, project):
                    ['Project']['rich_text'])
 
 
-def readDatabase(databaseId):
-    global results
-
-    # Query the database and get the results
-    results = notion.databases.query(databaseId).get("results")
-
-    # Loop through the list of results - Extraer listas de props.
-    for result in results:
-        # Get the Name value for the current result, if it exists
-        name = ""
-        if "Name" in result["properties"] and len(result["properties"]["Name"]["title"]) > 0:
-            name = result["properties"]["Name"]["title"][0]["text"]["content"]
-
-        # Get the Note value for the current result, if it exists
-        note = ""
-        if "Note" in result["properties"] and len(result["properties"]["Note"]["rich_text"]) > 0:
-            note = result["properties"]["Note"]["rich_text"][0]["text"]["content"]
-
-        # Get the Active? value for the current result, if it exists
-        active = False
-        if "Active?" in result["properties"] and result["properties"]["Active?"]["checkbox"]:
-            active = result["properties"]["Active?"]["checkbox"]
-
-        # Get the Project value for the current result, if it exists
-        project = ""  # lo imprime muy bn...
-        if "Project" in result["properties"] and len(result["properties"]["Project"]["rich_text"]) > 0:
-            project = result["properties"]["Project"]["rich_text"][0]["plain_text"]
-        # print('bruh project'+project)
-
-        # Print the Name, Note, Active?, and Project values for the current result
-        # print("Name:", name)
-        # print("Note:", note)
-        # print("Active?:", active)
-        # print("Project:", project)
-
-    # Set the state of the tkinter Checkbox widget to match the "Active?" column value of the current page
-    checkbox.var.set(results[current_index]
-                     ['properties']['Active?']['checkbox'])
-
-# print(f"Results: {results}")
-    show_result(current_index, project)
-    # select_project(results[current_index]['properties']
-    #                ['Project']['rich_text'])
-
-
-def createPage(databaseId, headers):
-
-    createUrl = 'https://api.notion.com/v1/pages'
-
-    newPageData = {
-        "parent": {"database_id": databaseId},
-        "properties": {
-            "Name": {
-                "title": [
-                    {
-                        "text": {
-                            "content": ""
-                        }
-                    }
-                ]
-            },
-            "Note": {
-                "rich_text": [
-                    {
-                        "text": {
-                            "content": ""
-                        }
-                    }
-                ]
-            }
-        }
-    }
-    # print(databaseId, headers, name, note)
-    data = json.dumps(newPageData)
-
-    res = requests.request("POST", createUrl, headers=headers, data=data)
-
-    print(res.status_code)
-    # print(res.text)
-    update_database()
-
-
 def update_database():
     global name, note, results, current_index, timer_mins, current_project
-    # print("current_index:", current_index)  # debugging line
-    # print("results length:", len(results))  # debugging line
-    # print("results[0]:", results[0])  # debugging line
-    # print("properties keys:", results[0]
-    #       ["properties"].keys())  # debugging line
+
     page_id = results[current_index]['id']
     name = input_box.get("1.0", 'end').strip()
     note = props_box.get("1.0", 'end').strip()
 
-    print("current project:"+current_project)
+    print("current project:"+str(current_project))
 
     # Remove the "🪶 Log -->" and "📝 Note -->" added text from the name and note variables
     if name.startswith("🪶"):
@@ -300,23 +243,56 @@ def update_database():
         print(f"Error: {response.status_code} - {response.text}")
 
 
+def createPage(databaseId, headers):
+
+    createUrl = 'https://api.notion.com/v1/pages'
+
+    newPageData = {
+        "parent": {"database_id": databaseId},
+        "properties": {
+            "Name": {
+                "title": [
+                    {
+                        "text": {
+                            "content": ""
+                        }
+                    }
+                ]
+            },
+            "Note": {
+                "rich_text": [
+                    {
+                        "text": {
+                            "content": ""
+                        }
+                    }
+                ]
+            }
+        }
+    }
+    # print(databaseId, headers, name, note)
+    data = json.dumps(newPageData)
+
+    res = requests.request("POST", createUrl, headers=headers, data=data)
+
+    print(res.status_code)
+    # print(res.text)
+    update_database()
+
+
 def select_project(project):
     global current_project
     current_project = project
-    print(f"Selected project: {current_project}")
+    # Check if the project list is not empty
+    if project:
+        # Extract the text from the 'content' key using a regular expression
+        match = re.search(r"'content': '(.+?)'", str(project))
+        if match:
+            current_project = match.group(1)
 
-    # Check if the current_project list is not empty
-    if current_project:
-        # Access the content value
-        content_value = current_project[0]['text']['content']
-        print(f"Content value: {content_value}")
-
-        # # Update the text property of the button
-        project_button.config(
-            text=content_value if content_value else "No Project")
-    else:
-        print("The project list is empty.")
-        project_button.config(text="No Project")
+    # Update the text property of the button
+    project_button.config(
+        text=current_project if current_project else "No Project")
 
 
 def move_lock():
@@ -659,7 +635,7 @@ button_frame.pack(side='left', padx=5)
 project_text = current_project if current_project != "" else "No Project"
 project_button = tk.Button(button_frame, text=project_text,
                            command=lambda: menu.post(project_button.winfo_rootx(), project_button.winfo_rooty()))
-project_button.config(width=120, height=4, bg="#444B64",
+project_button.config(width=130, height=4, bg="#444B64",
                       fg="white", activebackground="#343540")
 project_button.pack(side='left')
 
@@ -704,6 +680,6 @@ paned_window.add(options_box)
 
 # Read the database and show the first result
 readDatabase(databaseId)
-show_result(current_index, project)
+# show_result(current_index, project)
 
 root.mainloop()
