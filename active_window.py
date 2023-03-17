@@ -362,8 +362,8 @@ def toggle_timer():
     global pomodoro_running, pomodoro_button, start_time, timer_mins
 
     # Query the current page ID that is being viewed in Notion
-    page_id = results[current_index][2]
-
+    print(results[current_index])
+    page_id = results[current_index]['id']
     # Send a GET request to Notion API to retrieve the "timer-mins" property of the current page
     res = requests.get(
         f"https://api.notion.com/v1/pages/{page_id}", headers=headers)
@@ -407,7 +407,7 @@ def toggle_timer():
             # Create label to display total time and add to root window
             total_time = f"Total Time: {minutes} minutes"
             total_time_label = tk.Label(root, text=total_time, font=(
-                'Arial', 12), bg='#29314e', fg='white')
+                'Arial', 12), bg='#1e2127', fg='white')
             total_time_label.pack(side='top')
 
             # Remove total time label after 10 seconds
@@ -436,28 +436,25 @@ def toggle_timer():
 #             menu.add_command(
 #                 label=project["name"], command=lambda p=project["name"]: select_project(p))
 #
-# ----------------------------------- Window creation (Viewjmjh) --------------------------------------
+# ----------------------------------- Window creation (View) --------------------------------------
 #
 root = tk.Tk()
 
 overrideredirect_enabled = True
-
+# Set the window size
+root.geometry("1069x70+0+1370")
 # Remove title bar
 root.overrideredirect(True)
 
 # Set the window to always be on top
 root.wm_attributes("-topmost", True)
 
-# Set the window size
-root.geometry("1069x70+0+1370")
-
 # Set the title of the window
 root.title("Active Window 🚀🌙⭐")
 
-
 root.config(borderwidth=0)
-root.configure(background="#29314e")
-root.config(borderwidth=0, bg="#29314e")
+root.configure(background="#1e2127")
+root.config(borderwidth=0, bg="#1e2127")
 
 # Calculate the width of the root window
 width = root.winfo_screenwidth()
@@ -468,7 +465,7 @@ width = root.winfo_screenwidth()
 
 def round_button(widget):
     widget.config(relief="flat", borderwidth=1, highlightthickness=1)
-    widget.config(bg="#343540", fg="#FFFFFF", activebackground="#29314e")
+    widget.config(bg="#1e2127", fg="#FFFFFF", activebackground="#1e2127")
     widget.config(highlightbackground="white", highlightcolor="white")
     widget.config(bd=2, padx=5, pady=0, font=("Arial", 9), width=6, height=2)
     widget.config(padx=0)
@@ -496,7 +493,7 @@ def handle_ctrl_down(event):
 
 
 # ============ Create frame to hold Right - buttons
-frame = tk.Frame(root, bg="#29314e")
+frame = tk.Frame(root, bg="#1e2127")
 frame.pack(side='right', padx=0)
 # Configure column widths
 frame.columnconfigure(0, weight=0)
@@ -541,17 +538,18 @@ a2_button.grid(row=1, column=1, padx=0, pady=0)
 
 
 # ====== Create frame to hold Left navigation - buttons
-frameL = tk.Frame(root, bg="#29314e")
+frameL = tk.Frame(root, bg="#1e2127")
 frameL.pack(side='right', padx=0)
+arrow_buttons_bg = "#3f4652"
 
 # Create button ↑ Next
 a3_button = tk.Button(frameL, text="↑", command=lambda: show_prev(current_project),
-                      font=('TkDefaultFont', 14, 'bold'), width=2, height=1, bg="#444B64", relief="flat")
+                      font=('TkDefaultFont', 14, 'bold'), width=2, height=1, bg=arrow_buttons_bg, relief="flat")
 a3_button.grid(row=0, column=0, padx=1, pady=0, sticky="nswe")
 
 # Create button ↓ Prev -  ← ↑ → ↓ ↚ ↛ ↜ ↝ ↞ ↟
 a4_button = tk.Button(frameL, text="↓", command=lambda: show_next(current_project),
-                      font=('TkDefaultFont', 14, 'bold'), width=2, height=1, bg="#444B64", relief="flat")
+                      font=('TkDefaultFont', 14, 'bold'), width=2, height=1, bg=arrow_buttons_bg, relief="flat")
 a4_button.grid(row=1, column=0, padx=1, pady=0, sticky="nswe")
 
 #
@@ -560,21 +558,21 @@ a4_button.grid(row=1, column=0, padx=1, pady=0, sticky="nswe")
 
 # -------------------------- frame input + checkbox
 # Create a frame to hold the checkbox and the input box
-checkbox_frame = tk.Frame(root, bg="#29314e")
+checkbox_frame = tk.Frame(root, bg="#1e2127")
 checkbox_frame.pack(fill='both', expand=True)
 
 # Set the frame's background color to match the input box's background color
-checkbox_frame.config(borderwidth=0, bg="#29314e")
+checkbox_frame.config(borderwidth=0, bg="#1e2127")
 
 # Create the checkbox
 checkbox = tk.Checkbutton(
-    checkbox_frame, bg="#29314e", highlightthickness=0)
+    checkbox_frame, bg="#1e2127", highlightthickness=0)
 
 # Add the checkbox to the frame
 checkbox.pack(side='right')
 
 # Set the checkbox's background color to match the input box's background color
-checkbox.config(bg="#29314e")
+checkbox.config(bg="#1e2127")
 
 
 # Create a variable to hold the state of the checkbox
@@ -589,7 +587,7 @@ checkbox.config(variable=checkbox.var, command=update_database)
 
 # Create the input box with 90% width
 input_box = tk.Text(checkbox_frame, height=1, width=int(
-    width*0.9/7), bg="#29314e", fg="white")
+    width*0.9/7), bg="#1e2127", fg="white")
 
 # Add placeholder text
 input_box.insert('1.0', f"🪶 Active Log --> {name}\n")
@@ -607,12 +605,12 @@ checkbox_frame.pack(fill='both', expand=True)
 
 # Create paned window to hold note and options columns
 paned_window = tk.PanedWindow(
-    root, orient=tk.HORIZONTAL, sashwidth=5, sashpad=5, showhandle=True, handlesize=10, bg="#444B64", bd=2)
+    root, orient=tk.HORIZONTAL, sashwidth=5, sashpad=5, showhandle=True, handlesize=10, bg=arrow_buttons_bg, bd=2)
 paned_window.pack(fill='both', expand=True, padx=1, pady=1)
 
 # Create Note column
 props_box = tk.Text(paned_window, height=3.7, width=118,
-                    bg="#29314e", fg="white")
+                    bg="#1e2127", fg="white")
 props_box.pack(fill='both', expand=True)
 
 # Add placeholder text
@@ -623,11 +621,11 @@ props_box.config(insertbackground='white')
 
 # Create options column
 options_box = tk.Text(paned_window, height=1.5, width=10,
-                      bg="#29314e", fg="white")
+                      bg="#1e2127", fg="white")
 options_box.pack(fill='both', expand=True)
 
 # Create a frame to hold the new button
-button_frame = tk.Frame(options_box, bg="#29314e")
+button_frame = tk.Frame(options_box, bg="#1e2127")
 button_frame.pack(side='left', padx=5)
 
 
@@ -635,8 +633,8 @@ button_frame.pack(side='left', padx=5)
 project_text = current_project if current_project != "" else "No Project"
 project_button = tk.Button(button_frame, text=project_text,
                            command=lambda: menu.post(project_button.winfo_rootx(), project_button.winfo_rooty()))
-project_button.config(width=130, height=4, bg="#444B64",
-                      fg="white", activebackground="#343540")
+project_button.config(width=130, height=4, bg=arrow_buttons_bg,
+                      fg="white", activebackground="#1e2127")
 project_button.pack(side='left')
 
 
@@ -654,22 +652,22 @@ for project in projects:
 # Create the new button2
 new_button2 = tk.Button(button_frame, text="add/edit Tags",
                         command=lambda: print("New Button Clicked!"))
-new_button2.config(width=10, height=1, bg="#444B64",
-                   fg="white", activebackground="#343540")
+new_button2.config(width=10, height=1, bg=arrow_buttons_bg,
+                   fg="white", activebackground="#1e2127")
 new_button2.pack(side='left')
 
 # Create the new button3
 new_button3 = tk.Button(button_frame, text="link to note/task",
                         command=lambda: print("New Button Clicked!"))
-new_button3.config(width=10, height=1, bg="#444B64",
-                   fg="white", activebackground="#343540")
+new_button3.config(width=10, height=1, bg=arrow_buttons_bg,
+                   fg="white", activebackground="#1e2127")
 new_button3.pack(side='left')
 
 # Create the new button4
 new_button4 = tk.Button(button_frame, text="wiz commands",
                         command=lambda: print("New Button Clicked!"))
-new_button4.config(width=10, height=1, bg="#444B64",
-                   fg="white", activebackground="#343540")
+new_button4.config(width=10, height=1, bg=arrow_buttons_bg,
+                   fg="white", activebackground="#1e2127")
 new_button4.pack(side='left')
 
 
