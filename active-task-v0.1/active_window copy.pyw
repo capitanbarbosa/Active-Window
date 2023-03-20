@@ -1,20 +1,15 @@
 import tkinter as tk
-from tkinter import ttk
 import requests
 import json
 import time
 import threading
-from notion_client import Client
-import pprint
-import re
+
 
 #
 # ----------------------- DATA STRUCTURE - MODEL ---------------------
 #
 
 token = 'secret_Rs800ockGMwCwW6w7SY34v9m2QXtFCkeuqleS77U8Pb'
-# Set your Notion API integration token
-integration_token = 'secret_Rs800ockGMwCwW6w7SY34v9m2QXtFCkeuqleS77U8Pb'
 databaseId = '614f2195f4ee4c9b8db9b232b8d53948'
 name = ''
 note = ''
@@ -37,94 +32,15 @@ pomodoro_running = False
 timer_mins = 0
 
 
-# Dummy data for the dropdown menu
-projects = []
-
-# Authenticate with Notion API using integration token
-notion = Client(auth=integration_token)
-
-# Projects database
-database_id = "ef5fcadfa8144d22b2d613a5c86b9cf6"
-results = notion.databases.query(database_id).get("results")
-# print(results)
-
-# Get the Name column contents
-projects = ['']+[page['properties']['Name']['title']
-                 [0]['text']['content'] for page in results]
-projects.sort()
-current_project = projects[0] if projects else ""
-
-current_project = ""
-
 #
-# ------------------ (Controller) -------------------------
+# ------------------ Button commands (Controller) -------------------------
 #
 
 
-def readDatabase(databaseId):
-    global results
-
-    # Query the database and get the results
-    results = notion.databases.query(databaseId).get("results")
-
-    # Loop through the list of results - Extraer listas de props.
-    for result in results:
-        # Get the Name value for the current result, if it exists
-        name = ""
-        if "Name" in result["properties"] and len(result["properties"]["Name"]["title"]) > 0:
-            name = result["properties"]["Name"]["title"][0]["text"]["content"]
-
-        # Get the Note value for the current result, if it exists
-        note = ""
-        if "Note" in result["properties"] and len(result["properties"]["Note"]["rich_text"]) > 0:
-            note = result["properties"]["Note"]["rich_text"][0]["text"]["content"]
-
-        # Get the Active? value for the current result, if it exists
-        active = False
-        if "Active?" in result["properties"] and result["properties"]["Active?"]["checkbox"]:
-            active = result["properties"]["Active?"]["checkbox"]
-
-        # Get the Project value for the current result, if it exists
-        project = ""  # lo imprime muy bn...
-        if "Project" in result["properties"] and len(result["properties"]["Project"]["rich_text"]) > 0:
-            project = result["properties"]["Project"]["rich_text"][0]["plain_text"]
-
-    # Set the state of the tkinter Checkbox widget to match the "Active?" column value of the current page
-    checkbox.var.set(results[current_index]
-                     ['properties']['Active?']['checkbox'])
-
-    show_result(current_index, project)
-
-
-def show_result(index, project):
-    global name, note, current_index, current_project
+def show_result(index):
+    global name, note, current_index
     current_index = index
-    current_project = project
-
-    # Get the page object
-    page = results[index]
-
-    # Get the name
-    # name = page['properties']['Name']['title'][0]['text']['content']
-    if 'Name' in page['properties'] and page['properties']['Name']['title']:
-        name = page['properties']['Name']['title'][0]['text']['content']
-    else:
-        name = ""
-
-    # Get the note
-    if 'Note' in page['properties'] and page['properties']['Note']['rich_text']:
-        note = page['properties']['Note']['rich_text'][0]['text']['content']
-    else:
-        note = ""
-
-    # Get the page_id
-    page_id = page['id']
-
-    # Get the active status
-    if 'Active?' in page['properties']:
-        active = page['properties']['Active?']['checkbox']
-    else:
-        active = False
+    name, note, page_id, active, timer_mins = results[index]
 
     # Update the input_box and props_box widgets with the new information
     input_box.delete('1.0', 'end')
@@ -137,121 +53,53 @@ def show_result(index, project):
     # Set the cursor's default location to the first line with content
     input_box.mark_set("insert", "1.0")
     checkbox.var.set(active)
-
-    selected_project = current_project
-
-    # Update the text of the project_button with the name of the project
-    if selected_project == "":
-        project_text = "No Project"
-    else:
-        project_text = selected_project
-    project_button.config(text=project_text)
-
-    # Set the current project to the one displayed in the current result
-    for i in range(menu.index('end')):
-        if menu.entrycget(i, 'label') == current_project:
-            current_project = menu.entrycget(i, 'label')
-            break
-    else:
-        current_project = ""
-
-    select_project(results[current_index]['properties']
-                   ['Project']['rich_text'])
+    print(timer_mins)
 
 
-def update_database():
-    global name, note, results, current_index, timer_mins, current_project
+def readDatabase(databaseId, headers):
+    readUrl = f"https://api.notion.com/v1/databases/{databaseId}/query"
 
-    page_id = results[current_index]['id']
-    name = input_box.get("1.0", 'end').strip()
-    note = props_box.get("1.0", 'end').strip()
+    res = requests.request("POST", readUrl, headers=headers)
+    data = res.json()
 
-    print("current project:"+str(current_project))
+    if 'results' not in data:
+        print(f"Error: {res.status_code} - {res.text}")
+        return
 
-    # Remove the "🪶 Log -->" and "📝 Note -->" added text from the name and note variables
-    if name.startswith("🪶"):
-        name = name[1:]
-    if note.startswith("📝"):
-        note = note[1:]
+    # Append each name, note, page ID, timer mins, and "Active?" checkbox value tuple to the results list
+    global results
+    results = []
+    for result in data['results']:
+        if 'title' in result['properties']['Name'] and result['properties']['Name']['title']:
+            name = result['properties']['Name']['title'][0]['plain_text']
+        else:
+            name = ''
+            # print(
+            #     f"Error: 'title' property in 'Name' field is empty for result {result}")
+        if 'rich_text' in result['properties']['Note']:
+            if result['properties']['Note']['rich_text']:
+                note = result['properties']['Note']['rich_text'][0]['plain_text']
+            else:
+                note = ''
+        else:
+            note = ''
+        page_id = result['id']
+        if 'checkbox' in result['properties']['Active?']:
+            active = result['properties']['Active?']['checkbox']
+        else:
+            active = False
+        if 'number' in result['properties']['timer-mins']:
+            timer_mins = result['properties']['timer-mins']['number']
+            # print(result['properties']['timer-mins']['number'])
+        else:
+            timer_mins = 0
+        results.append((name, note, page_id, timer_mins, active))
 
-    # Create the data dictionary, excluding the "Project" property if current_project is empty
-    data = {
-        "properties": {
-            "Name": {
-                "title": [
-                    {
-                        "text": {
-                            "content": name
-                        }
-                    }
-                ]
-            },
-            "Note": {
-                "rich_text": [
-                    {
-                        "text": {
-                            "content": note
-                        }
-                    }
-                ]
-            }
-        }
-    }
+    # Set the state of the tkinter Checkbox widget to match the "Active?" column value of the current page
+    checkbox.var.set(results[current_index][4])
 
-    # Add the "Project" property if current_project is not empty
-    if current_project:
-        data["properties"]["Project"] = {
-            "rich_text": [
-                {
-                    "text": {
-                        "content": current_project
-                    }
-                }
-            ]
-        }
-
-    # chatGPT always fucks us here, switching the is None -> is not . we always fix this here...
-    #   the timer updating to 0 always...
-    # Check if the timer-mins property exists in the data for the current page
-    if timer_mins is None:
-        data["properties"]["timer-mins"] = {
-            "number": timer_mins
-        }
-
-    # Check the state of the checkbox and modify the data dictionary accordingly
-    if checkbox.var.get() == 1:
-        data["properties"]["Active?"] = {
-            "checkbox": True
-        }
-    else:
-        data["properties"]["Active?"] = {
-            "checkbox": False
-        }
-
-    # Set up the Notion API request headers using your integration token
-    headers = {
-        "Notion-Version": "2021-08-16",
-        "Authorization": token,
-        "Content-Type": "application/json"
-    }
-
-    # Send a PATCH request to the Notion API to update the page properties
-    url = f"https://api.notion.com/v1/pages/{page_id}"
-    response = requests.patch(url, headers=headers, json=data)
-
-    # If the API request was successful, reload the database and update the results
-    if response.status_code == 200:
-        readDatabase(databaseId)
-
-        # Change the button icon to a spinner
-        a1_button.config(text="updating db...")
-
-        # Set a delay of 1 second before switching the button back to the original icon
-        root.after(1000, lambda: a1_button.config(text="💾"))
-
-    # If the API request was unsuccessful, print an error message
-    else:
-        print(f"Error: {response.status_code} - {response.text}")
+    # print(f"Results: {results}")
+    show_result(current_index)
 
 
 def createPage(databaseId, headers):
@@ -281,10 +129,6 @@ def createPage(databaseId, headers):
             }
         }
     }
-    if timer_mins is None:
-        newPageData["properties"]["timer-mins"] = {
-            "number": timer_mins
-        }
     # print(databaseId, headers, name, note)
     data = json.dumps(newPageData)
 
@@ -295,19 +139,80 @@ def createPage(databaseId, headers):
     update_database()
 
 
-def select_project(project):
-    global current_project
-    current_project = project
-    # Check if the project list is not empty
-    if project:
-        # Extract the text from the 'content' key using a regular expression
-        match = re.search(r"'content': '(.+?)'", str(project))
-        if match:
-            current_project = match.group(1)
+def update_database():
+    global name, note, results, current_index, timer_mins
+    page_id = results[current_index][2]
+    timer_mins = results[current_index][3]
+    name = input_box.get("1.0", 'end').strip()
+    note = props_box.get("1.0", 'end').strip()
+    # Remove the "🪶 Log -->" and "📝 Note -->" added text from the name and note variables
+    if name.startswith("🪶"):
+        name = name[1:]
+    if note.startswith("📝"):
+        note = note[1:]
+    data = {
+        "properties": {
+            "Name": {
+                "title": [
+                    {
+                        "text": {
+                            "content": name
+                        }
+                    }
+                ]
+            },
+            "Note": {
+                "rich_text": [
+                    {
+                        "text": {
+                            "content": note
+                        }
+                    }
+                ]
+            }
+        }
+    }
 
-    # Update the text property of the button
-    project_button.config(
-        text=current_project if current_project else "No Project")
+    # Check if the timer-mins property exists in the data for the current page
+    if timer_mins is None:
+        data["properties"]["timer-mins"] = {
+            "number": timer_mins
+        }
+
+    # Check the state of the checkbox and modify the data dictionary accordingly
+    if checkbox.var.get() == 1:
+        data["properties"]["Active?"] = {
+            "checkbox": True
+        }
+    else:
+        data["properties"]["Active?"] = {
+            "checkbox": False
+        }
+
+    # Set up the Notion API request headers using your integration token
+    headers = {
+        "Notion-Version": "2021-08-16",
+        "Authorization": token,
+        "Content-Type": "application/json"
+    }
+
+    # Send a PATCH request to the Notion API to update the page properties
+    url = f"https://api.notion.com/v1/pages/{page_id}"
+    response = requests.patch(url, headers=headers, json=data)
+
+    # If the API request was successful, reload the database and update the results
+    if response.status_code == 200:
+        readDatabase(databaseId, headers)
+
+        # Change the button icon to a spinner
+        a1_button.config(text="🔄")
+
+        # Set a delay of 1 second before switching the button back to the original icon
+        root.after(1000, lambda: a1_button.config(text="💾"))
+
+    # If the API request was unsuccessful, print an error message
+    else:
+        print(f"Error: {response.status_code} - {response.text}")
 
 
 def move_lock():
@@ -318,24 +223,24 @@ def move_lock():
     toggle_overrideredirect()
 
 
-def show_next(project):
+def show_next():
     global current_index, name, note
     current_index += 1
     if current_index >= len(results):
         current_index = len(results) - 1
     name = input_box.get("1.0", 'end').strip()
     note = props_box.get("1.0", 'end').strip()
-    show_result(current_index, project)
+    show_result(current_index)
 
 
-def show_prev(project):
+def show_prev():
     global current_index, name, note
     current_index -= 1
     if current_index < 0:
         current_index = 0
     name = input_box.get("1.0", 'end').strip()
     note = props_box.get("1.0", 'end').strip()
-    show_result(current_index, project)
+    show_result(current_index)
 
 
 def toggle_overrideredirect():
@@ -377,8 +282,8 @@ def toggle_timer():
     global pomodoro_running, pomodoro_button, start_time, timer_mins
 
     # Query the current page ID that is being viewed in Notion
-    print(results[current_index])
-    page_id = results[current_index]['id']
+    page_id = results[current_index][2]
+
     # Send a GET request to Notion API to retrieve the "timer-mins" property of the current page
     res = requests.get(
         f"https://api.notion.com/v1/pages/{page_id}", headers=headers)
@@ -422,7 +327,7 @@ def toggle_timer():
             # Create label to display total time and add to root window
             total_time = f"Total Time: {minutes} minutes"
             total_time_label = tk.Label(root, text=total_time, font=(
-                'Arial', 12), bg='#1e2127', fg='white')
+                'Arial', 12), bg='#29314e', fg='white')
             total_time_label.pack(side='top')
 
             # Remove total time label after 10 seconds
@@ -439,7 +344,7 @@ def toggle_timer():
 
 
 #
-# ----------------------------------- Window creation (View) --------------------------------------
+# ----------------------------------- Window creation (Model?- root app.py?) --------------------------------------
 #
 root = tk.Tk()
 
@@ -452,15 +357,15 @@ root.overrideredirect(True)
 root.wm_attributes("-topmost", True)
 
 # Set the window size
-root.geometry("1081x70+0+1370")
+root.geometry("1069x70+0+1370")
 
 # Set the title of the window
 root.title("Active Window 🚀🌙⭐")
 
 
 root.config(borderwidth=0)
-root.configure(background="#1e2127")
-root.config(borderwidth=0, bg="#1e2127")
+root.configure(background="#29314e")
+root.config(borderwidth=0, bg="#29314e")
 
 # Calculate the width of the root window
 width = root.winfo_screenwidth()
@@ -471,7 +376,7 @@ width = root.winfo_screenwidth()
 
 def round_button(widget):
     widget.config(relief="flat", borderwidth=1, highlightthickness=1)
-    widget.config(bg="#1e2127", fg="#FFFFFF", activebackground="#1e2127")
+    widget.config(bg="#343540", fg="#FFFFFF", activebackground="#29314e")
     widget.config(highlightbackground="white", highlightcolor="white")
     widget.config(bd=2, padx=5, pady=0, font=("Arial", 9), width=6, height=2)
     widget.config(padx=0)
@@ -499,7 +404,7 @@ def handle_ctrl_down(event):
 
 
 # ============ Create frame to hold Right - buttons
-frame = tk.Frame(root, bg="#1e2127")
+frame = tk.Frame(root, bg="#29314e")
 frame.pack(side='right', padx=0)
 # Configure column widths
 frame.columnconfigure(0, weight=0)
@@ -544,18 +449,17 @@ a2_button.grid(row=1, column=1, padx=0, pady=0)
 
 
 # ====== Create frame to hold Left navigation - buttons
-frameL = tk.Frame(root, bg="#1e2127")
+frameL = tk.Frame(root, bg="#29314e")
 frameL.pack(side='right', padx=0)
-arrow_buttons_bg = "#3f4652"
 
 # Create button ↑ Next
-a3_button = tk.Button(frameL, text="↑", command=lambda: show_prev(current_project),
-                      font=('TkDefaultFont', 14, 'bold'), width=2, height=1, bg=arrow_buttons_bg, relief="flat")
+a3_button = tk.Button(frameL, text="↑", command=show_prev,
+                      font=('TkDefaultFont', 14, 'bold'), width=2, height=1, bg="#444B64", relief="flat")
 a3_button.grid(row=0, column=0, padx=1, pady=0, sticky="nswe")
 
 # Create button ↓ Prev -  ← ↑ → ↓ ↚ ↛ ↜ ↝ ↞ ↟
-a4_button = tk.Button(frameL, text="↓", command=lambda: show_next(current_project),
-                      font=('TkDefaultFont', 14, 'bold'), width=2, height=1, bg=arrow_buttons_bg, relief="flat")
+a4_button = tk.Button(frameL, text="↓", command=show_next,
+                      font=('TkDefaultFont', 14, 'bold'), width=2, height=1, bg="#444B64", relief="flat")
 a4_button.grid(row=1, column=0, padx=1, pady=0, sticky="nswe")
 
 #
@@ -564,21 +468,21 @@ a4_button.grid(row=1, column=0, padx=1, pady=0, sticky="nswe")
 
 # -------------------------- frame input + checkbox
 # Create a frame to hold the checkbox and the input box
-checkbox_frame = tk.Frame(root, bg="#1e2127")
+checkbox_frame = tk.Frame(root, bg="#29314e")
 checkbox_frame.pack(fill='both', expand=True)
 
 # Set the frame's background color to match the input box's background color
-checkbox_frame.config(borderwidth=0, bg="#1e2127")
+checkbox_frame.config(borderwidth=0, bg="#29314e")
 
 # Create the checkbox
 checkbox = tk.Checkbutton(
-    checkbox_frame, bg="#1e2127", highlightthickness=0)
+    checkbox_frame, bg="#29314e", highlightthickness=0)
 
 # Add the checkbox to the frame
 checkbox.pack(side='right')
 
 # Set the checkbox's background color to match the input box's background color
-checkbox.config(bg="#1e2127")
+checkbox.config(bg="#29314e")
 
 
 # Create a variable to hold the state of the checkbox
@@ -593,7 +497,7 @@ checkbox.config(variable=checkbox.var, command=update_database)
 
 # Create the input box with 90% width
 input_box = tk.Text(checkbox_frame, height=1, width=int(
-    width*0.9/7), bg="#1e2127", fg="white")
+    width*0.9/7), bg="#29314e", fg="white")
 
 # Add placeholder text
 input_box.insert('1.0', f"🪶 Active Log --> {name}\n")
@@ -611,12 +515,12 @@ checkbox_frame.pack(fill='both', expand=True)
 
 # Create paned window to hold note and options columns
 paned_window = tk.PanedWindow(
-    root, orient=tk.HORIZONTAL, sashwidth=5, sashpad=5, showhandle=True, handlesize=10, bg=arrow_buttons_bg, bd=2)
+    root, orient=tk.HORIZONTAL, sashwidth=5, sashpad=5, showhandle=True, handlesize=10, bg="#444B64", bd=2)
 paned_window.pack(fill='both', expand=True, padx=1, pady=1)
 
 # Create Note column
 props_box = tk.Text(paned_window, height=3.7, width=118,
-                    bg="#1e2127", fg="white")
+                    bg="#29314e", fg="white")
 props_box.pack(fill='both', expand=True)
 
 # Add placeholder text
@@ -627,54 +531,33 @@ props_box.config(insertbackground='white')
 
 # Create options column
 options_box = tk.Text(paned_window, height=1.5, width=10,
-                      bg="#1e2127", fg="white")
+                      bg="#29314e", fg="white")
 options_box.pack(fill='both', expand=True)
 
 # Create a frame to hold the new button
-button_frame = tk.Frame(options_box, bg="#1e2127")
+button_frame = tk.Frame(options_box, bg="#29314e")
 button_frame.pack(side='left', padx=5)
 
-
-# Create the new button with updated text
-project_text = current_project if current_project != "" else "No Project"
-project_button = tk.Button(button_frame, text=project_text,
-                           command=lambda: menu.post(project_button.winfo_rootx(), project_button.winfo_rooty()))
-project_button.config(width=130, height=4, bg=arrow_buttons_bg,
-                      fg="white", activebackground="#1e2127")
-project_button.pack(side='left')
-
-
-# Create the dropdown menu
-menu = tk.Menu(project_button, tearoff=0)
-
-# Add the projects to the dropdown menu
-# pareciera que cada projecto lo vuelven un boton con el commando select_project y fija ese.
-# ese es el valor con el que hay que actualiozar el current_project q no aaparece el malvado...
-for project in projects:
-    menu.add_command(
-        label=project, command=lambda p=project: select_project(p))
-
+# Create the new button
+new_button = tk.Button(button_frame, text="link to note/task",
+                       command=lambda: print("New Button Clicked!"))
+new_button.config(width=10, height=1, bg="#444B64",
+                  fg="white", activebackground="#343540")
+new_button.pack(side='left')
 
 # Create the new button2
 new_button2 = tk.Button(button_frame, text="add/edit Tags",
                         command=lambda: print("New Button Clicked!"))
-new_button2.config(width=10, height=1, bg=arrow_buttons_bg,
-                   fg="white", activebackground="#1e2127")
+new_button2.config(width=10, height=1, bg="#444B64",
+                   fg="white", activebackground="#343540")
 new_button2.pack(side='left')
 
 # Create the new button3
-new_button3 = tk.Button(button_frame, text="link to note/task",
+new_button3 = tk.Button(button_frame, text="add/edit Tags",
                         command=lambda: print("New Button Clicked!"))
-new_button3.config(width=10, height=1, bg=arrow_buttons_bg,
-                   fg="white", activebackground="#1e2127")
+new_button3.config(width=10, height=1, bg="#444B64",
+                   fg="white", activebackground="#343540")
 new_button3.pack(side='left')
-
-# Create the new button4
-new_button4 = tk.Button(button_frame, text="wiz commands",
-                        command=lambda: print("New Button Clicked!"))
-new_button4.config(width=10, height=1, bg=arrow_buttons_bg,
-                   fg="white", activebackground="#1e2127")
-new_button4.pack(side='left')
 
 
 # Add columns to paned window
@@ -683,7 +566,7 @@ paned_window.add(options_box)
 
 
 # Read the database and show the first result
-readDatabase(databaseId)
-# show_result(current_index, project)
+readDatabase(databaseId, headers)
+show_result(current_index)
 
 root.mainloop()
