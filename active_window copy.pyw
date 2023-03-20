@@ -8,9 +8,6 @@ from notion_client import Client
 import pprint
 import re
 
-# TO-DO: fix create a new entry deleting the project on first instance only... afterwards its okay..
-# ---------> cuando hace readDatabase por primera vez, el current_project es "" al
-# ------------> crear una nueva entry, y setea el log actual sin project. no es urgente...
 #
 # ----------------------- DATA STRUCTURE - MODEL ---------------------
 #
@@ -165,6 +162,10 @@ def show_result(index, project):
 def update_database():
     global name, note, results, current_index, timer_mins, current_project
 
+    # Add this check at the beginning of the update_database function
+    if isinstance(current_project, list) and not current_project:
+        current_project = ""
+
     page_id = results[current_index]['id']
     name = input_box.get("1.0", 'end').strip()
     note = props_box.get("1.0", 'end').strip()
@@ -197,21 +198,30 @@ def update_database():
                         }
                     }
                 ]
-            }
+            },
+            "Project": {
+                "rich_text": [
+                    {
+                        "text": {
+                            "content": current_project
+                        }
+                    }
+                ]
+            },
         }
     }
 
     # Add the "Project" property if current_project is not empty
-    if current_project:
-        data["properties"]["Project"] = {
-            "rich_text": [
-                {
-                    "text": {
-                        "content": current_project
-                    }
-                }
-            ]
-        }
+    # if current_project is None:
+    #     data["properties"]["Project"] = {
+    #         "rich_text": [
+    #             {
+    #                 "text": {
+    #                     "content": current_project
+    #                 }
+    #             }
+    #         ]
+    #     }
 
     # chatGPT always fucks us here, switching the is None -> is not . we always fix this here...
     #   the timer updating to 0 always...
