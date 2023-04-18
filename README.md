@@ -1,6 +1,8 @@
 # Active-Window
 
-Takes advantage of the unused space in the Windows 11 GUI, to help me keep track of all of my work related activities throughout the day, and help me keep focus.
+An always-on-top activity log, linked to my Notion database. Placed inside the unused space of the Windows taskbar.
+
+Helps me keep track of all of activities and keep focus throughout the day.
 
 Made with Python, tkinter, and the Notion-client api.
 
