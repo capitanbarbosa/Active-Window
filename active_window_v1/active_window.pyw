@@ -7,6 +7,8 @@ import threading
 from notion_client import Client
 import pprint
 import re
+from shortcut_button_row import ShortcutButtonRow
+
 
 #
 # ----------------------- DATA STRUCTURE - MODEL ---------------------
@@ -711,6 +713,15 @@ new_button4 = tk.Button(button_frame, text="wiz commands",
 new_button4.config(width=10, height=1, bg=arrow_buttons_bg,
                    fg="white", activebackground="#1e2127")
 new_button4.pack(side='left')
+
+
+
+new_frame = tk.Frame(root)
+new_frame.pack()
+
+shortcut_row = ShortcutButtonRow(new_frame)  # Replace 'frame' with the appropriate parent frame for the shortcut row
+shortcut_row.pack()  # or use 'grid' if you prefer grid layout
+
 
 
 # Add columns to paned window

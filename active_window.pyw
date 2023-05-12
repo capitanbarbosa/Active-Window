@@ -7,6 +7,8 @@ import threading
 from notion_client import Client
 import pprint
 import re
+import tkinter.simpledialog as simpledialog
+import pyautogui
 
 #
 # ----------------------- DATA STRUCTURE - MODEL ---------------------
@@ -473,6 +475,68 @@ def toggle_timer():
         t = threading.Thread(target=update_timer)
         t.start()
 
+class ShortcutButtonRow(tk.Frame):
+    def __init__(self, master):
+        super().__init__(master)
+        self.buttons = []
+        self.create_widgets()
+
+    def create_widgets(self):
+        # Create a frame to hold the buttons
+        self.button_frame = tk.Frame(self)
+        self.button_frame.pack(side=tk.LEFT)
+
+        # Create the "+" button to add more buttons
+        self.add_button = tk.Button(self.button_frame, text="+", command=self.create_button)
+        self.add_button.pack(side=tk.LEFT)
+
+        # Create the pencil button to edit button text
+        self.edit_button = tk.Button(self.button_frame, text="\u270E", command=self.edit_button_text)
+        self.edit_button.pack(side=tk.LEFT)
+
+        # Create the initial buttons
+        self.create_button()
+
+    def create_button(self, name="Desktop"):
+        # Determine the index of the button in the list
+        index = len(self.buttons) + 1
+
+        # Create a new button and add it to the button frame
+        button = tk.Button(
+            self.button_frame,
+            text=name + " " + str(index),
+            command=lambda idx=index: self.execute_shortcut(idx)
+        )
+        button.pack(side=tk.LEFT)
+
+        # Add the button to the list
+        self.buttons.append(button)
+
+    def execute_shortcut(self, index):
+        # Convert the index to a string
+        index_str = str(index)
+
+        # Simulate pressing the Win, Alt, and Shift keys
+        pyautogui.keyDown('win')
+        pyautogui.keyDown('alt')
+        pyautogui.keyDown('shift')
+
+        # Simulate pressing the index key
+        pyautogui.press(index_str)
+
+        # Simulate releasing the Win, Alt, Shift, and index keys
+        pyautogui.keyUp('win')
+        pyautogui.keyUp('alt')
+        pyautogui.keyUp('shift')
+        pyautogui.keyUp(index_str)
+
+    def edit_button_text(self):
+        # Select a button to edit its inner text
+        selected_button = simpledialog.askstring("Edit Button", "Enter the button index (1, 2, 3, ...) to edit:")
+        if selected_button and selected_button.isdigit() and 1 <= int(selected_button) <= len(self.buttons):
+            new_text = simpledialog.askstring("Edit Button", "Enter the new text for the button:")
+            if new_text:
+                self.buttons[int(selected_button) - 1].config(text=new_text)
 
 #
 # ----------------------------------- Window creation (View) --------------------------------------
@@ -488,7 +552,11 @@ root.overrideredirect(True)
 root.wm_attributes("-topmost", True)
 
 # Set the window size
-root.geometry("1081x70+0+1370")
+root.geometry("1300x70+0+1370")
+# root.minsize(600,600)
+
+# # set initial position
+# root.geometry("+0+1370")
 
 # Set the title of the window
 root.title("Active Window 🚀🌙⭐")
@@ -501,10 +569,17 @@ root.config(borderwidth=0, bg="#1e2127")
 # Calculate the width of the root window
 width = root.winfo_screenwidth()
 
+
+# Create the framey frame
+framey = tk.Frame(root, bg="#1e2127")
+framey.pack(side='right', padx=0, fill=tk.Y, expand=True)
+
+# Create the ShortcutButtonRow component
+row = ShortcutButtonRow(framey)
+row.pack(side=tk.RIGHT, anchor=tk.N)
+
 # Create a function to round the edges of buttons
 # estilo universal de botones.... *****
-
-
 def round_button(widget):
     widget.config(relief="flat", borderwidth=1, highlightthickness=1)
     widget.config(bg="#1e2127", fg="#FFFFFF", activebackground="#1e2127")
@@ -512,22 +587,14 @@ def round_button(widget):
     widget.config(bd=2, padx=5, pady=0, font=("Arial", 9), width=6, height=2)
     widget.config(padx=0)
     widget.config(highlightthickness=1, highlightbackground='white')
-
-
 # keeb shortcuts -> ctrl + k, ctrl up and down
-
-
 def on_key_press(event):
     if event.state == 4 and event.keysym == "Return":
         a1_button.invoke()
         print("ctrl enter pressed")
-
-
 def handle_ctrl_up(event):
     # Handle Ctrl + Up keypress here
     a3_button.invoke()
-
-
 def handle_ctrl_down(event):
     # Handle Ctrl + Down keypress here
     pass
@@ -711,6 +778,7 @@ new_button4 = tk.Button(button_frame, text="wiz commands",
 new_button4.config(width=10, height=1, bg=arrow_buttons_bg,
                    fg="white", activebackground="#1e2127")
 new_button4.pack(side='left')
+
 
 
 # Add columns to paned window
