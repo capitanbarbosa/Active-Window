@@ -9,6 +9,9 @@ import pprint
 import re
 # import tkinter.simpledialog as simpledialog
 from tkinter import simpledialog, messagebox
+import keyboard
+import ctypes
+
 
 import pyautogui
 
@@ -482,7 +485,27 @@ class ShortcutButtonRow(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
         self.buttons = []
+        self.shift_pressed = False  # Variable to track the state of the shift key
         self.create_widgets()
+        self.create_shift_listener()  # Create the global shift key listener
+
+    def create_shift_listener(self):
+        # Create a global listener for the shift key
+        keyboard.on_press_key("shift", self.on_shift_key_press)
+        keyboard.on_release_key("shift", self.on_shift_key_release)
+
+    def on_shift_key_press(self, event):
+        # Change the background color of the framey frame and buttons when Shift key is pressed
+        self.shift_pressed = True  # Set the shift_pressed flag to True
+        for button in self.buttons:
+            button.config(bg="#58ffd6")  # Set the background color of buttons to red
+
+    def on_shift_key_release(self, event):
+        # Change the background color of the framey frame and buttons back to the default color when Shift key is released
+        self.shift_pressed = False  # Set the shift_pressed flag to False
+        for button in self.buttons:
+            button.config(bg="#3f4652")  # Set the background color of buttons to the default color
+
 
     def create_widgets(self):
         # Create a frame to hold the buttons
@@ -504,7 +527,7 @@ class ShortcutButtonRow(tk.Frame):
         for index in range(2, 7):
             self.create_button(name=str(index), bg="#3f4652")  # Set the background color of the button to black
 
-    def create_button(self, name="", padx=5, bg=""):
+    def create_button(self, name="", padx=5, bg="#3f4652"):
         # Determine the index of the button in the list
         index = len(self.buttons) + 1
 
@@ -544,6 +567,8 @@ class ShortcutButtonRow(tk.Frame):
         if new_text:
             button.config(text=(" " + new_text + " ").center(5))
 
+
+
     def execute_shortcut(self, index):
         # Convert the index to a string
         index_str = str(index)
@@ -551,7 +576,8 @@ class ShortcutButtonRow(tk.Frame):
         # Simulate pressing the Win, Alt, and Shift keys
         pyautogui.keyDown('win')
         pyautogui.keyDown('alt')
-        pyautogui.keyDown('shift')
+        if self.shift_pressed:  # If the shift key is pressed
+            pyautogui.keyDown('shift')
 
         # Simulate pressing the index key
         pyautogui.press(index_str)
@@ -559,10 +585,24 @@ class ShortcutButtonRow(tk.Frame):
         # Simulate releasing the Win, Alt, Shift, and index keys
         pyautogui.keyUp('win')
         pyautogui.keyUp('alt')
-        pyautogui.keyUp('shift')
+        if self.shift_pressed:  # If the shift key is pressed
+            pyautogui.keyUp('shift')
         pyautogui.keyUp(index_str)
+        
+        # # # Change window's desktop shortcut.
+
+def on_shift_key_press(event):
+    # Change the background color of the framey frame and buttons when Shift key is pressed
+    # framey.config(bg="#")  # Set the background color of framey frame to red
+    for button in row.buttons:
+        button.config(bg="#58ffd6")  # Set the background color of buttons to red
 
 
+def on_shift_key_release(event):
+    # Change the background color of the framey frame and buttons back to the default color when Shift key is released
+    # framey.config(bg="#1e2127")  # Set the background color of framey frame to the default color
+    for button in row.buttons:
+        button.config(bg="#3f4652")  # Set the background color of buttons to the default color
 
 
 #
@@ -604,6 +644,11 @@ framey.pack(side='right', padx=0, fill=tk.Y, expand=True)
 # Create the ShortcutButtonRow component
 row = ShortcutButtonRow(framey)
 row.pack(side=tk.RIGHT, anchor=tk.N)
+
+# Bind Shift key press and release events to change the background color of framey frame
+root.bind_all("<Shift-Key>", on_shift_key_press)
+root.bind_all("<KeyRelease-Shift_L>", on_shift_key_release)
+
 
 # Create a function to round the edges of buttons
 # estilo universal de botones.... *****
