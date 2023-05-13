@@ -7,8 +7,11 @@ import threading
 from notion_client import Client
 import pprint
 import re
-import tkinter.simpledialog as simpledialog
+# import tkinter.simpledialog as simpledialog
+from tkinter import simpledialog, messagebox
+
 import pyautogui
+
 
 #
 # ----------------------- DATA STRUCTURE - MODEL ---------------------
@@ -487,30 +490,59 @@ class ShortcutButtonRow(tk.Frame):
         self.button_frame.pack(side=tk.LEFT)
 
         # Create the "+" button to add more buttons
-        self.add_button = tk.Button(self.button_frame, text="+", command=self.create_button)
+        self.add_button = tk.Button(self.button_frame, text="  +  ", command=self.create_button, relief=tk.FLAT, bg="#3f4652")
         self.add_button.pack(side=tk.LEFT)
 
-        # Create the pencil button to edit button text
-        self.edit_button = tk.Button(self.button_frame, text="\u270E", command=self.edit_button_text)
-        self.edit_button.pack(side=tk.LEFT)
-
         # Create the initial buttons
-        self.create_button()
+        self.create_default_buttons()
 
-    def create_button(self, name="Desktop"):
+    def create_default_buttons(self):
+        # Create the "Log" button
+        self.create_button(name="Log", bg="#3f4652")  # Set the background color of the button to black
+
+        # Create buttons with numbers 2 to 6
+        for index in range(2, 7):
+            self.create_button(name=str(index), bg="#3f4652")  # Set the background color of the button to black
+
+    def create_button(self, name="", padx=5, bg=""):
         # Determine the index of the button in the list
         index = len(self.buttons) + 1
+
+        # Set the text based on the index and name
+        if index == 1 and name:
+            text = name
+        else:
+            text = str(index)
 
         # Create a new button and add it to the button frame
         button = tk.Button(
             self.button_frame,
-            text=name + " " + str(index),
-            command=lambda idx=index: self.execute_shortcut(idx)
+            text=(" " + text + " ").center(padx),
+            relief=tk.FLAT,  # Make the button flat
+            bg=bg  # Set the background color of the button
         )
         button.pack(side=tk.LEFT)
 
+        # Bind left-click event to execute_shortcut method
+        button.bind("<Button-1>", lambda event, idx=index: self.execute_shortcut(idx))
+
+        # Bind right-click event to edit_button_text method
+        button.bind("<Button-3>", lambda event, btn=button: self.edit_button_text(btn))
+
         # Add the button to the list
         self.buttons.append(button)
+
+
+    def edit_button_text(self, button):
+        # Get the current text of the button
+        current_text = button.cget("text").strip()
+
+        # Prompt the user to enter the new text for the button
+        new_text = simpledialog.askstring("Edit Button", "Enter the new text for the button:", initialvalue=current_text)
+
+        # Update the button's text if the user provided new text
+        if new_text:
+            button.config(text=(" " + new_text + " ").center(5))
 
     def execute_shortcut(self, index):
         # Convert the index to a string
@@ -530,13 +562,8 @@ class ShortcutButtonRow(tk.Frame):
         pyautogui.keyUp('shift')
         pyautogui.keyUp(index_str)
 
-    def edit_button_text(self):
-        # Select a button to edit its inner text
-        selected_button = simpledialog.askstring("Edit Button", "Enter the button index (1, 2, 3, ...) to edit:")
-        if selected_button and selected_button.isdigit() and 1 <= int(selected_button) <= len(self.buttons):
-            new_text = simpledialog.askstring("Edit Button", "Enter the new text for the button:")
-            if new_text:
-                self.buttons[int(selected_button) - 1].config(text=new_text)
+
+
 
 #
 # ----------------------------------- Window creation (View) --------------------------------------
@@ -632,7 +659,7 @@ round_button(move_button)
 move_button.grid(row=1, column=2, padx=0, pady=0)
 
 # Create pomodoro button
-pomodoro_button = tk.Button(frame, text="⏰", command=toggle_timer)
+pomodoro_button = tk.Button(frame, text="⏰", command=toggle_timer, fg="#808080")
 round_button(pomodoro_button)
 pomodoro_button.grid(row=0, column=1, padx=0, pady=0)
 
@@ -641,7 +668,7 @@ root.bind('<Control-Up>', handle_ctrl_up)
 root.bind('<Control-Down>', handle_ctrl_down)
 
 # Create magic button a2
-a2_button = tk.Button(frame, text="🪄")
+a2_button = tk.Button(frame, text="🪄", fg="#808080")
 round_button(a2_button)
 a2_button.grid(row=1, column=1, padx=0, pady=0)
 
