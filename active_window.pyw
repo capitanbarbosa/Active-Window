@@ -568,28 +568,36 @@ class ShortcutButtonRow(tk.Frame):
             button.config(text=(" " + new_text + " ").center(5))
 
 
-
     def execute_shortcut(self, index):
         # Convert the index to a string
         index_str = str(index)
 
-        # Simulate pressing the Win, Alt, and Shift keys
-        pyautogui.keyDown('win')
-        pyautogui.keyDown('alt')
         if self.shift_pressed:  # If the shift key is pressed
+            # shift focus to last window
+            pyautogui.keyDown('alt')
+            pyautogui.keyDown('tab')
+            pyautogui.keyUp('alt')
+            pyautogui.keyUp('tab')
+            # Simulate pressing the Win, Alt
+            pyautogui.keyDown('win')
+            pyautogui.keyDown('alt')
+            # send function key and shift.
             pyautogui.keyDown('shift')
-
-        # Simulate pressing the index key
-        pyautogui.press(index_str)
+            pyautogui.press('f' + index_str)
+        else:
+            # Simulate pressing the Win, Alt
+            pyautogui.keyDown('win')
+            pyautogui.keyDown('alt')
+            # Simulate pressing the index key (button number)
+            pyautogui.press(index_str)
 
         # Simulate releasing the Win, Alt, Shift, and index keys
         pyautogui.keyUp('win')
         pyautogui.keyUp('alt')
-        if self.shift_pressed:  # If the shift key is pressed
-            pyautogui.keyUp('shift')
-        pyautogui.keyUp(index_str)
-        
-        # # # Change window's desktop shortcut.
+
+        # if self.shift_pressed:  # If the shift key is pressed
+        #     pyautogui.keyUp('shift')
+        #     pyautogui.keyUp('f' + index_str)
 
 def on_shift_key_press(event):
     # Change the background color of the framey frame and buttons when Shift key is pressed
@@ -646,8 +654,12 @@ row = ShortcutButtonRow(framey)
 row.pack(side=tk.RIGHT, anchor=tk.N)
 
 # Bind Shift key press and release events to change the background color of framey frame
-root.bind_all("<Shift-Key>", on_shift_key_press)
-root.bind_all("<KeyRelease-Shift_L>", on_shift_key_release)
+# root.bind_all("<Shift-Key>", on_shift_key_press)
+# root.bind_all("<KeyRelease-Shift_L>", on_shift_key_release)
+
+root.bind_all("<Control-Key>", on_shift_key_press)
+root.bind_all("<KeyRelease-Control_L>", on_shift_key_release)
+
 
 
 # Create a function to round the edges of buttons
