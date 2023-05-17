@@ -588,12 +588,16 @@ class ShortcutButtonRow(tk.Frame):
             # Simulate pressing the Win, Alt
             pyautogui.keyDown('win')
             pyautogui.keyDown('alt')
+            pyautogui.keyDown('shift')
+
             # Simulate pressing the index key (button number)
             pyautogui.press(index_str)
 
         # Simulate releasing the Win, Alt, Shift, and index keys
         pyautogui.keyUp('win')
         pyautogui.keyUp('alt')
+        pyautogui.keyUp('shift')
+
 
         # if self.shift_pressed:  # If the shift key is pressed
         #     pyautogui.keyUp('shift')
