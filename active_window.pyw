@@ -281,6 +281,12 @@ def update_database():
     else:
         print(f"Error: {response.status_code} - {response.text}")
 
+def refresh_state():
+    # Add code here to refresh the state of the contents pulled from Notion
+    # For example, you can re-read the database and update the displayed results
+    readDatabase(databaseId)
+    show_result(current_index, current_project)
+
 
 def createPage(databaseId, headers):
 
@@ -498,7 +504,7 @@ class ShortcutButtonRow(tk.Frame):
         # Change the background color of the framey frame and buttons when Shift key is pressed
         self.shift_pressed = True  # Set the shift_pressed flag to True
         for button in self.buttons:
-            button.config(bg="#58ffd6")  # Set the background color of buttons to red
+            button.config(bg="#0077CC")  # Set the background color of buttons to red
 
     def on_shift_key_release(self, event):
         # Change the background color of the framey frame and buttons back to the default color when Shift key is released
@@ -522,17 +528,24 @@ class ShortcutButtonRow(tk.Frame):
     def create_default_buttons(self):
         # Create the "Log" button
         self.create_button(name="Log", bg="#3f4652")  # Set the background color of the button to black
+        self.create_button(name="dev", bg="#3f4652")  # Set the background color of the button to black
+        self.create_button(name="1", bg="#3f4652")  # Set the background color of the button to black
+        self.create_button(name="2", bg="#3f4652")  # Set the background color of the button to black
+        self.create_button(name="3", bg="#3f4652")  # Set the background color of the button to black
+        self.create_button(name="miw", bg="#3f4652")  # Set the background color of the button to black
+        self.create_button(name="media", bg="#3f4652")  # Set the background color of the button to black
 
-        # Create buttons with numbers 2 to 6
-        for index in range(2, 7):
-            self.create_button(name=str(index), bg="#3f4652")  # Set the background color of the button to black
+
+        # # Create buttons with numbers 2 to 6
+        # for index in range(2, 7):
+        #     self.create_button(name=str(index), bg="#3f4652")  # Set the background color of the button to black
 
     def create_button(self, name="", padx=5, bg="#3f4652"):
         # Determine the index of the button in the list
         index = len(self.buttons) + 1
 
         # Set the text based on the index and name
-        if index == 1 and name:
+        if (index in [1,2,3,4,5,6,7] and name):
             text = name
         else:
             text = str(index)
@@ -607,7 +620,7 @@ def on_shift_key_press(event):
     # Change the background color of the framey frame and buttons when Shift key is pressed
     # framey.config(bg="#")  # Set the background color of framey frame to red
     for button in row.buttons:
-        button.config(bg="#58ffd6")  # Set the background color of buttons to red
+        button.config(bg="#31887A")  # Set the background color of buttons to red
 
 
 def on_shift_key_release(event):
@@ -615,6 +628,8 @@ def on_shift_key_release(event):
     # framey.config(bg="#1e2127")  # Set the background color of framey frame to the default color
     for button in row.buttons:
         button.config(bg="#3f4652")  # Set the background color of buttons to the default color
+
+
 
 
 #
@@ -729,9 +744,14 @@ root.bind('<Control-Up>', handle_ctrl_up)
 root.bind('<Control-Down>', handle_ctrl_down)
 
 # Create magic button a2
-a2_button = tk.Button(frame, text="🪄", fg="#808080")
-round_button(a2_button)
-a2_button.grid(row=1, column=1, padx=0, pady=0)
+# a2_button = tk.Button(frame, text="🪄", fg="#808080")
+# round_button(a2_button)
+# a2_button.grid(row=1, column=1, padx=0, pady=0)
+
+# Create the refresh button
+refresh_button = tk.Button(frame, text="↻", command=refresh_state)
+round_button(refresh_button)
+refresh_button.grid(row=1, column=1, padx=0, pady=0)
 
 
 # ====== Create frame to hold Left navigation - buttons

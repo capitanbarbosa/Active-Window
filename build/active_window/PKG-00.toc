@@ -1,5 +1,5 @@
-('C:\\Users\\luisd\\OneDrive\\Documents\\Coding\\Wiz Macros\\Active '
- 'Window\\reset\\Active-Window\\build\\active_window\\active_window.pkg',
+('C:\\Users\\luisd\\OneDrive\\Documents\\Coding\\Wiz '
+ 'Macros\\Active-Window\\build\\active_window\\active_window.pkg',
  {'BINARY': True,
   'DATA': True,
   'EXECUTABLE': True,
@@ -9,28 +9,28 @@
   'PYZ': False,
   'SPLASH': True},
  [('PYZ-00.pyz',
-   'C:\\Users\\luisd\\OneDrive\\Documents\\Coding\\Wiz Macros\\Active '
-   'Window\\reset\\Active-Window\\build\\active_window\\PYZ-00.pyz',
+   'C:\\Users\\luisd\\OneDrive\\Documents\\Coding\\Wiz '
+   'Macros\\Active-Window\\build\\active_window\\PYZ-00.pyz',
    'PYZ'),
   ('struct',
-   'C:\\Users\\luisd\\OneDrive\\Documents\\Coding\\Wiz Macros\\Active '
-   'Window\\reset\\Active-Window\\build\\active_window\\localpycs\\struct.pyc',
+   'C:\\Users\\luisd\\OneDrive\\Documents\\Coding\\Wiz '
+   'Macros\\Active-Window\\build\\active_window\\localpycs\\struct.pyc',
    'PYMODULE'),
   ('pyimod01_archive',
-   'C:\\Users\\luisd\\OneDrive\\Documents\\Coding\\Wiz Macros\\Active '
-   'Window\\reset\\Active-Window\\build\\active_window\\localpycs\\pyimod01_archive.pyc',
+   'C:\\Users\\luisd\\OneDrive\\Documents\\Coding\\Wiz '
+   'Macros\\Active-Window\\build\\active_window\\localpycs\\pyimod01_archive.pyc',
    'PYMODULE'),
   ('pyimod02_importers',
-   'C:\\Users\\luisd\\OneDrive\\Documents\\Coding\\Wiz Macros\\Active '
-   'Window\\reset\\Active-Window\\build\\active_window\\localpycs\\pyimod02_importers.pyc',
+   'C:\\Users\\luisd\\OneDrive\\Documents\\Coding\\Wiz '
+   'Macros\\Active-Window\\build\\active_window\\localpycs\\pyimod02_importers.pyc',
    'PYMODULE'),
   ('pyimod03_ctypes',
-   'C:\\Users\\luisd\\OneDrive\\Documents\\Coding\\Wiz Macros\\Active '
-   'Window\\reset\\Active-Window\\build\\active_window\\localpycs\\pyimod03_ctypes.pyc',
+   'C:\\Users\\luisd\\OneDrive\\Documents\\Coding\\Wiz '
+   'Macros\\Active-Window\\build\\active_window\\localpycs\\pyimod03_ctypes.pyc',
    'PYMODULE'),
   ('pyimod04_pywin32',
-   'C:\\Users\\luisd\\OneDrive\\Documents\\Coding\\Wiz Macros\\Active '
-   'Window\\reset\\Active-Window\\build\\active_window\\localpycs\\pyimod04_pywin32.pyc',
+   'C:\\Users\\luisd\\OneDrive\\Documents\\Coding\\Wiz '
+   'Macros\\Active-Window\\build\\active_window\\localpycs\\pyimod04_pywin32.pyc',
    'PYMODULE'),
   ('pyiboot01_bootstrap',
    'C:\\Users\\luisd\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\PyInstaller\\loader\\pyiboot01_bootstrap.py',
@@ -66,8 +66,8 @@
    'C:\\Users\\luisd\\AppData\\Local\\Programs\\Python\\Python310\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth__tkinter.py',
    'PYSOURCE'),
   ('active_window',
-   'C:\\Users\\luisd\\OneDrive\\Documents\\Coding\\Wiz Macros\\Active '
-   'Window\\reset\\Active-Window\\active_window.pyw',
+   'C:\\Users\\luisd\\OneDrive\\Documents\\Coding\\Wiz '
+   'Macros\\Active-Window\\active_window.pyw',
    'PYSOURCE')],
  True,
  False,
