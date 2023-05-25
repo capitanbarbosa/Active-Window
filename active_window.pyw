@@ -182,9 +182,9 @@ def show_result(index, project):
 def update_database():
     global name, note, results, current_index, timer_mins, current_project, timer_duration
 
-    # # Add this check at the beginning of the update_database function
-    # if isinstance(current_project, list) and not current_project:
-    #     current_project = ""
+    # Add this check at the beginning of the update_database function
+    if isinstance(current_project, list) and not current_project:
+        current_project = ""
 
     page_id = results[current_index]['id']
     name = input_box.get("1.0", 'end').strip()
@@ -222,9 +222,6 @@ def update_database():
         }
     }
 
-    # if str(current_project)== '[]':
-    #     print("dayum")
-
     if current_project:
         data["properties"]["Project"] = {
             "rich_text": [
@@ -235,7 +232,6 @@ def update_database():
                 }
             ]
         }
-
 
     # chatGPT always fucks us here, switching the is None -> is not . we always fix this here...
     #   the timer updating to 0 always...
@@ -256,30 +252,45 @@ def update_database():
             "checkbox": False
         }
 
-    # Set up the Notion API request headers using your integration token
-    headers = {
-        "Notion-Version": "2021-08-16",
-        "Authorization": token,
-        "Content-Type": "application/json"
-    }
+    # Disable the update button to prevent multiple clicks
+    a1_button.config(state='disabled')
 
-    # Send a PATCH request to the Notion API to update the page properties
-    url = f"https://api.notion.com/v1/pages/{page_id}"
-    response = requests.patch(url, headers=headers, json=data)
+    # Define the function to be executed in the background thread
+    def api_call():
+        # Set up the Notion API request headers using your integration token
+        headers = {
+            "Notion-Version": "2021-08-16",
+            "Authorization": token,
+            "Content-Type": "application/json"
+        }
 
-    # If the API request was successful, reload the database and update the results
-    if response.status_code == 200:
-        readDatabase(databaseId)
+        # Send a PATCH request to the Notion API to update the page properties
+        url = f"https://api.notion.com/v1/pages/{page_id}"
+        response = requests.patch(url, headers=headers, json=data)
 
-        # Change the button icon to a spinner
-        a1_button.config(text="updating db...")
+        # If the API request was successful, reload the database and update the results
+        if response.status_code == 200:
+            readDatabase(databaseId)
 
-        # Set a delay of 1 second before switching the button back to the original icon
-        root.after(1000, lambda: a1_button.config(text="💾"))
+            # Change the button icon to a spinner
+            a1_button.config(text="updating db...")
 
-    # If the API request was unsuccessful, print an error message
-    else:
-        print(f"Error: {response.status_code} - {response.text}")
+            # Set a delay of 1 second before switching the button back to the original icon
+            root.after(1000, lambda: a1_button.config(text="💾"))
+
+            # Enable the update button once the API call is completed
+            a1_button.config(state='normal')
+
+        # If the API request was unsuccessful, print an error message
+        else:
+            print(f"Error: {response.status_code} - {response.text}")
+
+            # Enable the update button again in case of error
+            a1_button.config(state='normal')
+
+    # Create a new thread and start it
+    thread = threading.Thread(target=api_call)
+    thread.start()
 
 def refresh_state():
     # Add code here to refresh the state of the contents pulled from Notion
