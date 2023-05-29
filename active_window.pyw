@@ -529,16 +529,16 @@ class ShortcutButtonRow(tk.Frame):
         self.button_frame = tk.Frame(self)
         self.button_frame.pack(side=tk.LEFT)
 
-        # Create the "+" button to add more buttons
-        self.add_button = tk.Button(self.button_frame, text="  +  ", command=self.create_button, relief=tk.FLAT, bg="#3f4652")
-        self.add_button.pack(side=tk.LEFT)
+        # # Create the "+" button to add more buttons
+        # self.add_button = tk.Button(self.button_frame, text="  +  ", command=self.create_button, relief=tk.FLAT, bg="#3f4652")
+        # self.add_button.pack(side=tk.LEFT)
 
         # Create the initial buttons
         self.create_default_buttons()
 
     def create_default_buttons(self):
         # Create the "Log" button
-        self.create_button(name="Log", bg="#3f4652")  # Set the background color of the button to black
+        self.create_button(name="Log", bg="#3f4699")  # Set the background color of the button to black
         self.create_button(name="dev", bg="#3f4652")  # Set the background color of the button to black
         self.create_button(name="1", bg="#3f4652")  # Set the background color of the button to black
         self.create_button(name="2", bg="#3f4652")  # Set the background color of the button to black
@@ -566,7 +566,8 @@ class ShortcutButtonRow(tk.Frame):
             self.button_frame,
             text=(" " + text + " ").center(padx),
             relief=tk.FLAT,  # Make the button flat
-            bg=bg  # Set the background color of the button
+            bg=bg,  # Set the background color of the button
+            fg="white"  # Set the text color to white
         )
         button.pack(side=tk.LEFT)
 
