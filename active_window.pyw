@@ -11,8 +11,6 @@ import re
 from tkinter import simpledialog, messagebox
 import keyboard
 import ctypes
-
-
 import pyautogui
 
 
@@ -78,9 +76,9 @@ def readDatabase(databaseId):
     # Loop through the list of results - Extraer listas de props.
     for result in results:
         # Get the Name value for the current result, if it exists
-        name = ""
-        if "Name" in result["properties"] and len(result["properties"]["Name"]["title"]) > 0:
-            name = result["properties"]["Name"]["title"][0]["text"]["content"]
+        # name = ""
+        # if "Name" in result["properties"] and len(result["properties"]["Name"]["title"]) > 0:
+        #     name = result["properties"]["Name"]["title"][0]["text"]["content"]
 
         # Get the Note value for the current result, if it exists
         note = ""
@@ -88,9 +86,9 @@ def readDatabase(databaseId):
             note = result["properties"]["Note"]["rich_text"][0]["text"]["content"]
 
         # Get the Active? value for the current result, if it exists
-        active = False
-        if "Active?" in result["properties"] and result["properties"]["Active?"]["checkbox"]:
-            active = result["properties"]["Active?"]["checkbox"]
+        # active = False
+        # if "Active?" in result["properties"] and result["properties"]["Active?"]["checkbox"]:
+        #     active = result["properties"]["Active?"]["checkbox"]
 
         # Get the Project value for the current result, if it exists
         project = ""  # lo imprime muy bn...
@@ -103,8 +101,8 @@ def readDatabase(databaseId):
             timer_duration = 0 # set default value if column not present
 
     # Set the state of the tkinter Checkbox widget to match the "Active?" column value of the current page
-    checkbox.var.set(results[current_index]
-                     ['properties']['Active?']['checkbox'])
+    # checkbox.var.set(results[current_index]
+    #                  ['properties']['Active?']['checkbox'])
 
     show_result(current_index, project)
 
@@ -119,10 +117,10 @@ def show_result(index, project):
 
     # Get the name
     # name = page['properties']['Name']['title'][0]['text']['content']
-    if 'Name' in page['properties'] and page['properties']['Name']['title']:
-        name = page['properties']['Name']['title'][0]['text']['content']
-    else:
-        name = ""
+    # if 'Name' in page['properties'] and page['properties']['Name']['title']:
+    #     name = page['properties']['Name']['title'][0]['text']['content']
+    # else:
+    #     name = ""
 
     # Get the note
     if 'Note' in page['properties'] and page['properties']['Note']['rich_text']:
@@ -141,22 +139,22 @@ def show_result(index, project):
     page_id = page['id']
 
     # Get the active status
-    if 'Active?' in page['properties']:
-        active = page['properties']['Active?']['checkbox']
-    else:
-        active = False
+    # if 'Active?' in page['properties']:
+    #     active = page['properties']['Active?']['checkbox']
+    # else:
+    #     active = False
 
     # Update the input_box and props_box widgets with the new information
-    input_box.delete('1.0', 'end')
-    name_text = f"🪶 {name.strip()}"  # remove newline character
-    input_box.insert('1.0', name_text)
+    # input_box.delete('1.0', 'end')
+    # name_text = f"🪶📝 {name.strip()}"  # remove newline character
+    # input_box.insert('1.0', name_text)
     props_box.delete('1.0', 'end')
-    note_text = f"📝 {note.strip()}"  # remove newline character
+    note_text = f"🪶 {note.strip()}"  # remove newline character
     props_box.insert('1.0', note_text)
 
     # Set the cursor's default location to the first line with content
-    input_box.mark_set("insert", "1.0")
-    checkbox.var.set(active)
+    # input_box.mark_set("insert", "1.0")
+    # checkbox.var.set(active)
 
     selected_project = current_project
 
@@ -187,29 +185,29 @@ def update_database():
         current_project = ""
 
     page_id = results[current_index]['id']
-    name = input_box.get("1.0", 'end').strip()
+    # name = input_box.get("1.0", 'end').strip()
     note = props_box.get("1.0", 'end').strip()
 
     print("current project:"+str(current_project))
 
     # Remove the "🪶 Log -->" and "📝 Note -->" added text from the name and note variables
-    if name.startswith("🪶"):
-        name = name[1:]
-    if note.startswith("📝"):
+    # if name.startswith("🪶"):
+    #     name = name[1:]
+    if note.startswith("🪶"):
         note = note[1:]
 
     # Create the data dictionary, excluding the "Project" property if current_project is empty
     data = {
         "properties": {
-            "Name": {
-                "title": [
-                    {
-                        "text": {
-                            "content": name
-                        }
-                    }
-                ]
-            },
+            # "Name": {
+            #     "title": [
+            #         {
+            #             "text": {
+            #                 "content": name
+            #             }
+            #         }
+            #     ]
+            # },
             "Note": {
                 "rich_text": [
                     {
@@ -243,14 +241,14 @@ def update_database():
         }
 
     # Check the state of the checkbox and modify the data dictionary accordingly
-    if checkbox.var.get() == 1:
-        data["properties"]["Active?"] = {
-            "checkbox": True
-        }
-    else:
-        data["properties"]["Active?"] = {
-            "checkbox": False
-        }
+    # if checkbox.var.get() == 1:
+    #     data["properties"]["Active?"] = {
+    #         "checkbox": True
+    #     }
+    # else:
+    #     data["properties"]["Active?"] = {
+    #         "checkbox": False
+    #     }
 
     # Disable the update button to prevent multiple clicks
     a1_button.config(state='disabled')
@@ -384,7 +382,7 @@ def show_next(project):
     current_index += 1
     if current_index >= len(results):
         current_index = len(results) - 1
-    name = input_box.get("1.0", 'end').strip()
+    # name = input_box.get("1.0", 'end').strip()
     note = props_box.get("1.0", 'end').strip()
     show_result(current_index, project)
 
@@ -394,7 +392,7 @@ def show_prev(project):
     current_index -= 1
     if current_index < 0:
         current_index = 0
-    name = input_box.get("1.0", 'end').strip()
+    # name = input_box.get("1.0", 'end').strip()
     note = props_box.get("1.0", 'end').strip()
     show_result(current_index, project)
 
@@ -787,48 +785,48 @@ a4_button.grid(row=1, column=0, padx=1, pady=0, sticky="nswe")
 
 # -------------------------- frame input + checkbox
 # Create a frame to hold the checkbox and the input box
-checkbox_frame = tk.Frame(root, bg="#1e2127")
-checkbox_frame.pack(fill='both', expand=True)
+# checkbox_frame = tk.Frame(root, bg="#1e2127")
+# checkbox_frame.pack(fill='both', expand=True)
 
 # Set the frame's background color to match the input box's background color
-checkbox_frame.config(borderwidth=0, bg="#1e2127")
+# checkbox_frame.config(borderwidth=0, bg="#1e2127")
 
 # Create the checkbox
-checkbox = tk.Checkbutton(
-    checkbox_frame, bg="#1e2127", highlightthickness=0)
+# checkbox = tk.Checkbutton(
+#     checkbox_frame, bg="#1e2127", highlightthickness=0)
 
 # Add the checkbox to the frame
-checkbox.pack(side='right')
+# checkbox.pack(side='right')
 
 # Set the checkbox's background color to match the input box's background color
-checkbox.config(bg="#1e2127")
+# checkbox.config(bg="#1e2127")
 
 
 # Create a variable to hold the state of the checkbox
-checkbox.var = tk.IntVar()
+# checkbox.var = tk.IntVar()
 
 # Set the initial state of the checkbox to unchecked
-checkbox.var.set(0)
+# checkbox.var.set(0)
 
 # Bind the checkbox to the callback function
-checkbox.config(variable=checkbox.var, command=update_database)
+# checkbox.config(variable=checkbox.var, command=update_database)
 
 
 # Create the input box with 90% width
-input_box = tk.Text(checkbox_frame, height=1, width=int(
-    width*0.9/7), bg="#1e2127", fg="white")
+# input_box = tk.Text(checkbox_frame, height=1, width=int(
+#     width*0.9/7), bg="#1e2127", fg="white")
 
 # Add placeholder text
-input_box.insert('1.0', f"🪶 Active Log --> {name}\n")
+# input_box.insert('1.0', f"🪶 Active Log --> {name}\n")
 
 # Set cursor color to white
-input_box.config(insertbackground='white')
+# input_box.config(insertbackground='white')
 
-# Add the input box to the frame
-input_box.pack(side='left', fill='both', expand=True)
+# # Add the input box to the frame
+# input_box.pack(side='left', fill='both', expand=True)
 
 # Pack the checkbox_frame instead of the input box
-checkbox_frame.pack(fill='both', expand=True)
+# checkbox_frame.pack(fill='both', expand=True) 
 # -----------------------------------------------------------------
 
 
@@ -843,7 +841,7 @@ props_box = tk.Text(paned_window, height=3.7, width=118,
 props_box.pack(fill='both', expand=True)
 
 # Add placeholder text
-props_box.insert('1.0', f"📝 Note --> {note}\n")
+# props_box.insert('1.0', f"📝 Note --> {note}\n")
 
 # Set cursor color to white
 props_box.config(insertbackground='white')
