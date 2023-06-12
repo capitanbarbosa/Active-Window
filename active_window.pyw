@@ -115,13 +115,6 @@ def show_result(index, project):
     # Get the page object
     page = results[index]
 
-    # Get the name
-    # name = page['properties']['Name']['title'][0]['text']['content']
-    # if 'Name' in page['properties'] and page['properties']['Name']['title']:
-    #     name = page['properties']['Name']['title'][0]['text']['content']
-    # else:
-    #     name = ""
-
     # Get the note
     if 'Note' in page['properties'] and page['properties']['Note']['rich_text']:
         note = page['properties']['Note']['rich_text'][0]['text']['content']
@@ -138,23 +131,10 @@ def show_result(index, project):
     # Get the page_id
     page_id = page['id']
 
-    # Get the active status
-    # if 'Active?' in page['properties']:
-    #     active = page['properties']['Active?']['checkbox']
-    # else:
-    #     active = False
 
-    # Update the input_box and props_box widgets with the new information
-    # input_box.delete('1.0', 'end')
-    # name_text = f"🪶📝 {name.strip()}"  # remove newline character
-    # input_box.insert('1.0', name_text)
     props_box.delete('1.0', 'end')
     note_text = f"🪶 {note.strip()}"  # remove newline character
     props_box.insert('1.0', note_text)
-
-    # Set the cursor's default location to the first line with content
-    # input_box.mark_set("insert", "1.0")
-    # checkbox.var.set(active)
 
     selected_project = current_project
 
@@ -190,24 +170,12 @@ def update_database():
 
     print("current project:"+str(current_project))
 
-    # Remove the "🪶 Log -->" and "📝 Note -->" added text from the name and note variables
-    # if name.startswith("🪶"):
-    #     name = name[1:]
     if note.startswith("🪶"):
         note = note[1:]
 
     # Create the data dictionary, excluding the "Project" property if current_project is empty
     data = {
         "properties": {
-            # "Name": {
-            #     "title": [
-            #         {
-            #             "text": {
-            #                 "content": name
-            #             }
-            #         }
-            #     ]
-            # },
             "Note": {
                 "rich_text": [
                     {
@@ -239,16 +207,6 @@ def update_database():
         data["properties"]["timer-mins"] = {
             "number": timer_mins
         }
-
-    # Check the state of the checkbox and modify the data dictionary accordingly
-    # if checkbox.var.get() == 1:
-    #     data["properties"]["Active?"] = {
-    #         "checkbox": True
-    #     }
-    # else:
-    #     data["properties"]["Active?"] = {
-    #         "checkbox": False
-    #     }
 
     # Disable the update button to prevent multiple clicks
     a1_button.config(state='disabled')
@@ -328,18 +286,6 @@ def createPage(databaseId, headers):
         newPageData["properties"]["timer-mins"] = {
             "number": timer_mins
         }
-
-    # # Add the "Project" property if current_project is not empty
-    # if current_project is None:
-    #     newPageData["properties"]["Project"] = {
-    #         "rich_text": [
-    #             {
-    #                 "text": {
-    #                     "content": current_project
-    #                 }
-    #             }
-    #         ]
-    #     }
 
     # print(databaseId, headers, name, note)
     data = json.dumps(newPageData)
@@ -781,54 +727,7 @@ a4_button.grid(row=1, column=0, padx=1, pady=0, sticky="nswe")
 
 #
 # ------------------------------ input_box, paned_window to hold props_box, options_box
-#
-
-# -------------------------- frame input + checkbox
-# Create a frame to hold the checkbox and the input box
-# checkbox_frame = tk.Frame(root, bg="#1e2127")
-# checkbox_frame.pack(fill='both', expand=True)
-
-# Set the frame's background color to match the input box's background color
-# checkbox_frame.config(borderwidth=0, bg="#1e2127")
-
-# Create the checkbox
-# checkbox = tk.Checkbutton(
-#     checkbox_frame, bg="#1e2127", highlightthickness=0)
-
-# Add the checkbox to the frame
-# checkbox.pack(side='right')
-
-# Set the checkbox's background color to match the input box's background color
-# checkbox.config(bg="#1e2127")
-
-
-# Create a variable to hold the state of the checkbox
-# checkbox.var = tk.IntVar()
-
-# Set the initial state of the checkbox to unchecked
-# checkbox.var.set(0)
-
-# Bind the checkbox to the callback function
-# checkbox.config(variable=checkbox.var, command=update_database)
-
-
-# Create the input box with 90% width
-# input_box = tk.Text(checkbox_frame, height=1, width=int(
-#     width*0.9/7), bg="#1e2127", fg="white")
-
-# Add placeholder text
-# input_box.insert('1.0', f"🪶 Active Log --> {name}\n")
-
-# Set cursor color to white
-# input_box.config(insertbackground='white')
-
-# # Add the input box to the frame
-# input_box.pack(side='left', fill='both', expand=True)
-
-# Pack the checkbox_frame instead of the input box
-# checkbox_frame.pack(fill='both', expand=True) 
 # -----------------------------------------------------------------
-
 
 # Create paned window to hold note and options columns
 paned_window = tk.PanedWindow(
