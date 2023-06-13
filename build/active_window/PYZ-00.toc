@@ -1,5 +1,4 @@
-('C:\\Users\\luisd\\OneDrive\\Documents\\Coding\\Wiz '
- 'Macros\\Active-Window\\build\\active_window\\PYZ-00.pyz',
+('C:\\Users\\luisd\\OneDrive\\Documents\\Coding\\1-wizmacros\\Active-Window\\build\\active_window\\PYZ-00.pyz',
  [('PIL',
    'C:\\Users\\luisd\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\PIL\\__init__.py',
    'PYMODULE'),

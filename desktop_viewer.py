@@ -22,6 +22,7 @@ class ShortcutButtonRow(tk.Frame):
         super().__init__(master)
         self.buttons = []
         self.shift_pressed = False  # Variable to track the state of the shift key
+        self.current_desktop = 1  # Variable to track the current desktop index
         self.create_widgets()
         self.create_shift_listener()  # Create the global shift key listener
 
@@ -31,29 +32,23 @@ class ShortcutButtonRow(tk.Frame):
         keyboard.on_release_key("shift", self.on_shift_key_release)
 
     def on_shift_key_press(self, event):
-        # Change the background color of the framey frame and buttons when Shift key is pressed
+        # Change the background color of the frame and buttons when Shift key is pressed
         self.shift_pressed = True  # Set the shift_pressed flag to True
-        for button in self.buttons:
-            button.config(bg="#0077CC")  # Set the background color of buttons to red
+        self.update_button_colors()  # Update button colors when shift key is pressed
 
     def on_shift_key_release(self, event):
-        # Change the background color of the framey frame and buttons back to the default color when Shift key is released
+        # Change the background color of the frame and buttons back to the default color when Shift key is released
         self.shift_pressed = False  # Set the shift_pressed flag to False
-        for button in self.buttons:
-            button.config(bg="#3f4652")  # Set the background color of buttons to the default color
-
+        self.update_button_colors()  # Update button colors when shift key is released
 
     def create_widgets(self):
         # Create a frame to hold the buttons
         self.button_frame = tk.Frame(self)
         self.button_frame.pack(side=tk.LEFT)
 
-        # # Create the "+" button to add more buttons
-        # self.add_button = tk.Button(self.button_frame, text="  +  ", command=self.create_button, relief=tk.FLAT, bg="#3f4652")
-        # self.add_button.pack(side=tk.LEFT)
-
         # Create the initial buttons
         self.create_default_buttons()
+
 
     def create_default_buttons(self):
         # Create the "Log" button
@@ -100,6 +95,13 @@ class ShortcutButtonRow(tk.Frame):
         self.buttons.append(button)
 
 
+    def update_button_colors(self):
+        # Iterate over the buttons and update the background color based on the current desktop index
+        for index, button in enumerate(self.buttons):
+            if index + 1 == self.current_desktop:  # Current desktop index matches the button index
+                button.config(bg="#0077CC")  # Set the background color of the button to blue
+            else:
+                button.config(bg="#3f4652")  # Set the background color of other buttons to the default color
 
 
     def edit_button_text(self, button):
