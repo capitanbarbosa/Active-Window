@@ -133,8 +133,8 @@ def show_result(index, project):
 
 
     props_box.delete('1.0', 'end')
-    note_text = f"🪶 {note.strip()}"  # remove newline character
-    props_box.insert('1.0', note_text)
+    # note_text = f"🪶 {note.strip()}"  # remove newline character
+    # props_box.insert('1.0', note_text)
 
     selected_project = current_project
 
@@ -169,8 +169,8 @@ def update_database():
 
     print("current project:"+str(current_project))
 
-    if note.startswith("🪶"):
-        note = note[1:]
+    # if note.startswith("🪶"):
+    #     note = note[1:]
 
     # Create the data dictionary, excluding the "Project" property if current_project is empty
     data = {
