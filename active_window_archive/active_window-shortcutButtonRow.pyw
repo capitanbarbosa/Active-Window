@@ -13,8 +13,6 @@ import keyboard
 import ctypes
 import pyautogui
 import subprocess
-import webbrowser
-
 
 
 
@@ -749,8 +747,7 @@ def on_shift_key_release(event):
     for button in row.buttons:
         button.config(bg="#3f4652")  # Set the background color of buttons to the default color
 
-def open_in_new_window(url):
-    webbrowser.open_new(url)
+
 
 
 #
@@ -783,6 +780,22 @@ root.config(borderwidth=0, bg="#1e2127")
 
 # Calculate the width of the root window
 width = root.winfo_screenwidth()
+
+
+# # Create the framey frame
+# framey = tk.Frame(root, bg="#1e2127")
+# framey.pack(side='right', padx=3, pady=3, fill=tk.Y, expand=True)
+
+# row = ShortcutButtonRow(framey)
+# row.grid(row=0, column=0)
+
+# row2 = ShortcutButtonRow2(framey)
+# row2.grid(row=1, column=0)
+
+
+# Bind Shift key press and release events to change the background color of framey frame
+# root.bind_all("<Shift-Key>", on_shift_key_press)
+# root.bind_all("<KeyRelease-Shift_L>", on_shift_key_release)
 
 root.bind_all("<Control-Key>", on_shift_key_press)
 root.bind_all("<KeyRelease-Control_L>", on_shift_key_release)
@@ -851,6 +864,11 @@ root.bind("<Key>", on_key_press)
 root.bind('<Control-Up>', handle_ctrl_up)
 root.bind('<Control-Down>', handle_ctrl_down)
 
+# Create magic button a2
+# a2_button = tk.Button(frame, text="🪄", fg="#808080")
+# round_button(a2_button)
+# a2_button.grid(row=1, column=1, padx=0, pady=0)
+
 # Create the refresh button
 refresh_button = tk.Button(frame, text="↻", command=refresh_state)
 round_button(refresh_button)
@@ -897,24 +915,16 @@ options_box = tk.Text(paned_window, height=1.5, width=10,
                       bg="#1e2127", fg="white")
 options_box.pack(fill='both', expand=True)
 
-# Create a frame to hold the new buttons
+# Create a frame to hold the new button
 button_frame = tk.Frame(options_box, bg="#1e2127")
 button_frame.pack(side='left', padx=5)
 
-
-
-# Create the new button2
-new_button2 = tk.Button(button_frame, text="🪵Notion Log",
-                        command=lambda: open_in_new_window("https://www.notion.so/wizbarbosa/614f2195f4ee4c9b8db9b232b8d53948?v=d598de318b1c4ea39cabf6ec573c1e44"))
-new_button2.config(width=15, height=1, bg=arrow_buttons_bg,
-                   fg="white", activebackground="#1e2127")
-new_button2.pack(side='left')
 
 # Create the new button with updated text
 project_text = current_project if current_project != "" else "No Project"
 project_button = tk.Button(button_frame, text=project_text,
                            command=lambda: menu.post(project_button.winfo_rootx(), project_button.winfo_rooty()))
-project_button.config(width=9, height=2, bg=arrow_buttons_bg,
+project_button.config(width=130, height=4, bg=arrow_buttons_bg,
                       fg="white", activebackground="#1e2127")
 project_button.pack(side='left')
 
@@ -930,7 +940,12 @@ for project in projects:
         label=project, command=lambda p=project: select_project(p))
 
 
-
+# Create the new button2
+new_button2 = tk.Button(button_frame, text="add/edit Tags",
+                        command=lambda: print("New Button Clicked!"))
+new_button2.config(width=10, height=1, bg=arrow_buttons_bg,
+                   fg="white", activebackground="#1e2127")
+new_button2.pack(side='left')
 
 # Create the new button3
 new_button3 = tk.Button(button_frame, text="link to note/task",
