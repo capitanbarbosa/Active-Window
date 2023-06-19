@@ -133,8 +133,8 @@ def show_result(index, project):
 
 
     props_box.delete('1.0', 'end')
-    # note_text = f"🪶 {note.strip()}"  # remove newline character
-    # props_box.insert('1.0', note_text)
+    note_text = f"{note.strip()}"  # remove newline character
+    props_box.insert('1.0', note_text)
 
     selected_project = current_project
 
