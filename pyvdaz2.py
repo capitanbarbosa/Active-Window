@@ -5,6 +5,7 @@ from tkinter import simpledialog, messagebox
 import keyboard
 import pyautogui
 import subprocess
+from pyvda import AppView, get_apps_by_z_order, VirtualDesktop, get_virtual_desktops
 
 
 class ShortcutButtonRow(tk.Frame):
@@ -58,10 +59,18 @@ class ShortcutButtonRow(tk.Frame):
         self.create_button(name="miw", bg="#3f4652")  # Set the background color of the button to black
         self.create_button(name="media", bg="#3f4652")  # Set the background color of the button to black
 
+        # Highlight the current desktop index button
+        self.highlight_current_desktop()
 
-        # # Create buttons with numbers 2 to 6
-        # for index in range(2, 7):
-        #     self.create_button(name=str(index), bg="#3f4652")  # Set the background color of the button to black
+    def highlight_current_desktop(self):
+        # Highlight the current desktop index button
+        current_desktop = VirtualDesktop.current()
+        for index, button in enumerate(self.buttons, start=1):
+            if str(index) == str(current_desktop.number):
+                button.config(bg="#FF6904")  # Set the background color of the current desktop index button to pink
+            else:
+                button.config(bg="#3f4652")  # Set the background color of other buttons to the default color
+
 
     def create_button(self, name="", padx=5, bg="#3f4652"):
         # Determine the index of the button in the list
@@ -125,27 +134,15 @@ class ShortcutButtonRow(tk.Frame):
         # Run AutoHotkey script with the index as an argument
         subprocess.run([ahk_script, script_path, str(index)])
 
-
-    # ddd
-
     def execute_shortcut(self, index):
         # Convert the index to a string
         index_str = str(index)
 
-        # if self.shift_pressed:  # If the shift key is pressed
-        #     # shift focus to last window
-        #     pyautogui.keyDown('alt')
-        #     pyautogui.keyDown('tab')
-        #     pyautogui.keyUp('alt')
-        #     pyautogui.keyUp('tab')
-        #     # Simulate pressing the Win, Alt
-        #     pyautogui.keyDown('win')
-        #     pyautogui.keyDown('alt')
-        #     # send function key and shift.
-        #     pyautogui.keyDown('shift')
-        #     pyautogui.press('f' + index_str)
-        # else:
-        # Simulate pressing the Win, Alt
+        # Highlight the current desktop index button
+        for button in self.buttons:
+            button.config(bg="#FF99" if button["text"] == index_str else "#3f4652")
+
+
         pyautogui.keyDown('win')
         pyautogui.keyDown('alt')
         pyautogui.keyDown('shift')
@@ -214,6 +211,13 @@ class ShortcutButtonRow2(tk.Frame):
         self.create_button(name="miw", bg="#3f4652")  # Set the background color of the button to black
         self.create_button(name="media", bg="#3f4652")  # Set the background color of the button to black
 
+        # Highlight the current desktop index button
+        current_desktop = VirtualDesktop.current()
+        for button in self.buttons:
+            if button["text"] == str(current_desktop.number):
+                button.config(bg="#FF69B4")  # Set the background color of the current desktop index button to pink
+            else:
+                button.config(bg="#3f4652")  # Set the background color of other buttons to the default color
 
         # # Create buttons with numbers 2 to 6
         # for index in range(2, 7):
@@ -275,7 +279,9 @@ class ShortcutButtonRow2(tk.Frame):
         subprocess.run([ahk_script, script_path, str(index)])
 
     def execute_shortcut2(self, index):
-
+        # Highlight the current desktop index button
+        for button in self.buttons:
+            button.config(bg="#FF99" if button["text"] == index_str else "#3f4652")
 
         pyautogui.hotkey('win', 'tab')
         print('bruh')
