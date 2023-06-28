@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 import time
-# import tkinter.simpledialog as simpledialog
 from tkinter import simpledialog, messagebox
 import keyboard
 import pyautogui
@@ -338,9 +337,8 @@ def handle_ctrl_down(event):
 #
 # ----------------------------------- Window creation (View) --------------------------------------
 #
+# Create the root window
 root = tk.Tk()
-
-overrideredirect_enabled = True
 
 # Remove title bar
 root.overrideredirect(True)
@@ -348,23 +346,21 @@ root.overrideredirect(True)
 # Set the window to always be on top
 root.wm_attributes("-topmost", True)
 
-# Set the window size
-root.geometry("1300x70+0+1370")
-# root.minsize(600,600)
-
-# # set initial position
-# root.geometry("+0+1370")
-
 # Set the title of the window
 root.title("Active Window 🚀🌙⭐")
 
-# Calculate the width of the root window
-width = root.winfo_screenwidth()
+# Calculate the required width of the button row
+button_row = ShortcutButtonRow(root)
+button_row.pack()
+button_row.update()  # Ensure that the frame has been updated with the button widths
+button_row_width = button_row.winfo_reqwidth()
 
+# Set the window size based on the button row width
+root.geometry(f"{button_row_width}x63+1055+1377")
 
 # Create the framey frame
 framey = tk.Frame(root, bg="#1e2127")
-framey.pack(side='right', padx=3, pady=3, fill=tk.Y, expand=True)
+framey.pack(side='right', fill=tk.Y, expand=True)
 
 row = ShortcutButtonRow(framey)
 row.grid(row=0, column=0)
@@ -372,17 +368,8 @@ row.grid(row=0, column=0)
 row2 = ShortcutButtonRow2(framey)
 row2.grid(row=1, column=0)
 
-
-# Bind Shift key press and release events to change the background color of framey frame
-# root.bind_all("<Shift-Key>", on_shift_key_press)
-# root.bind_all("<KeyRelease-Shift_L>", on_shift_key_release)
-
 root.bind_all("<Control-Key>", on_shift_key_press)
 root.bind_all("<KeyRelease-Control_L>", on_shift_key_release)
-
-
-
-
 
 root.bind("<Key>", on_key_press)
 root.bind('<Control-Up>', handle_ctrl_up)
