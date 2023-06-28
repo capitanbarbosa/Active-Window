@@ -5,8 +5,9 @@ from tkinter import simpledialog, messagebox
 import keyboard
 import pyautogui
 import subprocess
+from pyvda import AppView, get_apps_by_z_order, VirtualDesktop, get_virtual_desktops
 
-
+# go to desktop
 class ShortcutButtonRow(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
@@ -21,7 +22,7 @@ class ShortcutButtonRow(tk.Frame):
         keyboard.on_release_key("shift", self.on_shift_key_release)
 
     def on_shift_key_press(self, event):
-        # Change the background color of the framey frame and buttons when Shift key is pressed
+        # Change the background color of the frame and buttons when Shift key is pressed
         self.shift_pressed = True  # Set the shift_pressed flag to True
         for button in self.buttons:
             button.config(bg="#0077CC")  # Set the background color of buttons to red
@@ -35,15 +36,10 @@ class ShortcutButtonRow(tk.Frame):
             else:
                 button.config(bg="#3f4652")  # Set the background color of other buttons to the default color
 
-
     def create_widgets(self):
         # Create a frame to hold the buttons
         self.button_frame = tk.Frame(self)
         self.button_frame.pack(side=tk.LEFT)
-
-        # # Create the "+" button to add more buttons
-        # self.add_button = tk.Button(self.button_frame, text="  +  ", command=self.create_button, relief=tk.FLAT, bg="#3f4652")
-        # self.add_button.pack(side=tk.LEFT)
 
         # Create the initial buttons
         self.create_default_buttons()
@@ -58,17 +54,33 @@ class ShortcutButtonRow(tk.Frame):
         self.create_button(name="miw", bg="#3f4652")  # Set the background color of the button to black
         self.create_button(name="media", bg="#3f4652")  # Set the background color of the button to black
 
+        # Highlight the current desktop index button
+        self.highlight_current_desktop()
 
-        # # Create buttons with numbers 2 to 6
-        # for index in range(2, 7):
-        #     self.create_button(name=str(index), bg="#3f4652")  # Set the background color of the button to black
+    def highlight_current_desktop(self):
+        # Get the active virtual desktop
+        active_desktop = VirtualDesktop.current()
+
+        # Get the index of the active desktop
+        active_desktop_index = active_desktop.number
+
+        # Highlight the current desktop index button
+        for index, button in enumerate(self.buttons, start=1):
+            if str(index) == str(active_desktop_index):
+                button.config(bg="#FF6904")  # Set the background color of the current desktop index button to pink
+            else:
+                button.config(bg="#3f4652")  # Set the background color of other buttons to the default color
+
+        # Schedule the next update after 1 second (adjust the duration as desired)
+        root.after(420, self.highlight_current_desktop)
+
 
     def create_button(self, name="", padx=5, bg="#3f4652"):
         # Determine the index of the button in the list
         index = len(self.buttons) + 1
 
         # Set the text based on the index and name
-        if (index in [1,2,3,4,5,6,7] and name):
+        if (index in [1, 2, 3, 4, 5, 6, 7]) and name:
             text = name
         else:
             text = str(index)
@@ -90,15 +102,10 @@ class ShortcutButtonRow(tk.Frame):
         button.bind("<Button-3>", lambda event, btn=button: self.edit_button_text(btn))
 
         # Bind shift + left-click event to execute_shift method
-        # button.bind("<Shift-Button-1>", lambda event, idx=index: self.execute_shift(idx))
-        button.bind("<Shift-Button-1>", lambda event, idx=index: (print(idx), self.execute_shift(idx)))
-        # button.bind("<Shift-Button-1>", lambda event, idx=index: self.execute_shift(event, idx))
-
-
+        button.bind("<Shift-Button-1>", lambda event, idx=index: self.execute_shift(idx))
 
         # Add the button to the list
         self.buttons.append(button)
-
 
     def edit_button_text(self, button):
         # Get the current text of the button
@@ -111,41 +118,22 @@ class ShortcutButtonRow(tk.Frame):
         if new_text:
             button.config(text=(" " + new_text + " ").center(5))
 
-    # def execute_shift(self, index):
-
-
-    #     # Convert the index to a string
-    #     index_str = str(index)
-
-    def execute_shift(index):
-        print("indexz: "+ index)
+    def execute_shift(self, index):
+        print("indexz: " + str(index))
         ahk_script = r'"C:\Program Files\AutoHotkey\UX\AutoHotkeyUX.exe"'
         script_path = r'"shift_window.ahk"'
 
         # Run AutoHotkey script with the index as an argument
         subprocess.run([ahk_script, script_path, str(index)])
 
-
-    # ddd
-
     def execute_shortcut(self, index):
         # Convert the index to a string
         index_str = str(index)
 
-        # if self.shift_pressed:  # If the shift key is pressed
-        #     # shift focus to last window
-        #     pyautogui.keyDown('alt')
-        #     pyautogui.keyDown('tab')
-        #     pyautogui.keyUp('alt')
-        #     pyautogui.keyUp('tab')
-        #     # Simulate pressing the Win, Alt
-        #     pyautogui.keyDown('win')
-        #     pyautogui.keyDown('alt')
-        #     # send function key and shift.
-        #     pyautogui.keyDown('shift')
-        #     pyautogui.press('f' + index_str)
-        # else:
-        # Simulate pressing the Win, Alt
+        # Highlight the current desktop index button
+        for button in self.buttons:
+            button.config(bg="#FF99" if button["text"] == index_str else "#3f4652")
+
         pyautogui.keyDown('win')
         pyautogui.keyDown('alt')
         pyautogui.keyDown('shift')
@@ -158,11 +146,7 @@ class ShortcutButtonRow(tk.Frame):
         pyautogui.keyUp('alt')
         pyautogui.keyUp('shift')
 
-
-        # if self.shift_pressed:  # If the shift key is pressed
-        #     pyautogui.keyUp('shift')
-        #     pyautogui.keyUp('f' + index_str)
-
+# move window to another desktop
 class ShortcutButtonRow2(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
@@ -299,43 +283,17 @@ class ShortcutButtonRow2(tk.Frame):
  
 
 def on_shift_key_press(event):
-    # Change the background color of the framey frame and buttons when Shift key is pressed
-    # framey.config(bg="#")  # Set the background color of framey frame to red
+    # Change the background color of the frame and buttons when Shift key is pressed
     for button in row.buttons:
         button.config(bg="#31887A")  # Set the background color of buttons to red
 
 
 def on_shift_key_release(event):
-    # Change the background color of the framey frame and buttons back to the default color when Shift key is released
-    # framey.config(bg="#1e2127")  # Set the background color of framey frame to the default color
+    # Change the background color of the frame and buttons back to the default color when Shift key is released
     for button in row.buttons:
-        button.config(bg="#3f4652")  # Set the background color of buttons to the default colo
+        button.config(bg="#3f4652")  # Set the background color of buttons to the default color
 
-# Create a function to round the edges of buttons
-# estilo universal de botones.... *****
-def round_button(widget):
-    widget.config(relief="flat", borderwidth=1, highlightthickness=1)
-    widget.config(bg="#1e2127", fg="#FFFFFF", activebackground="#1e2127")
-    widget.config(highlightbackground="white", highlightcolor="white")
-    widget.config(bd=2, padx=5, pady=0, font=("Arial", 9), width=6, height=2)
-    widget.config(padx=0)
-    widget.config(highlightthickness=1, highlightbackground='white')
-# keeb shortcuts -> ctrl + k, ctrl up and down
-def on_key_press(event):
-    if event.state == 4 and event.keysym == "Return":
-        a1_button.invoke()
-        print("ctrl enter pressed")
-def handle_ctrl_up(event):
-    # Handle Ctrl + Up keypress here
-    a3_button.invoke()
-def handle_ctrl_down(event):
-    # Handle Ctrl + Down keypress here
-    pass
-    a4_button.invoke()
 
-#
-# ----------------------------------- Window creation (View) --------------------------------------
-#
 # Create the root window
 root = tk.Tk()
 
@@ -369,10 +327,5 @@ row2.grid(row=1, column=0)
 
 root.bind_all("<Control-Key>", on_shift_key_press)
 root.bind_all("<KeyRelease-Control_L>", on_shift_key_release)
-
-root.bind("<Key>", on_key_press)
-root.bind('<Control-Up>', handle_ctrl_up)
-root.bind('<Control-Down>', handle_ctrl_down)
-
 
 root.mainloop()
