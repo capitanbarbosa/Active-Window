@@ -5,7 +5,7 @@ import json
 import time
 import threading
 from notion_client import Client
-import pprint
+# import pprint
 import re
 # import tkinter.simpledialog as simpledialog
 from tkinter import simpledialog, messagebox
@@ -168,9 +168,6 @@ def update_database():
     note = props_box.get("1.0", 'end').strip()
 
     print("current project:"+str(current_project))
-
-    # if note.startswith("🪶"):
-    #     note = note[1:]
 
     # Create the data dictionary, excluding the "Project" property if current_project is empty
     data = {
@@ -348,7 +345,7 @@ def toggle_size():
         size_button.config(text="⬜")
         current_size = "900x500"
     else:
-        root.geometry("1069x72+0+1370")
+        root.geometry("1000x72+0+1370")
         size_button.config(text=" ◻️")
         current_size = "1069x21"
 
@@ -605,6 +602,17 @@ new_button2.config(width=15, height=1, bg=arrow_buttons_bg,
                    fg="white", activebackground="#1e2127")
 new_button2.pack(side='left')
 
+
+
+
+# Create the new button3
+new_button3 = tk.Button(button_frame, text="🔥Journal + Habits",
+                        command=lambda: open_in_new_window("https://www.notion.so/wizbarbosa/033dbb8812b0406b9a4beb2315d6a918?v=2075c73b8d38482f8cfb2cc43fef1383"))
+new_button3.config(width=18, height=1, bg=arrow_buttons_bg,
+                   fg="white", activebackground="#1e2127")
+new_button3.pack(side='left')
+
+
 # Create the new button with updated text
 project_text = current_project if current_project != "" else "No Project"
 project_button = tk.Button(button_frame, text=project_text,
@@ -623,16 +631,6 @@ menu = tk.Menu(project_button, tearoff=0)
 for project in projects:
     menu.add_command(
         label=project, command=lambda p=project: select_project(p))
-
-
-
-
-# Create the new button3
-new_button3 = tk.Button(button_frame, text="link to note/task",
-                        command=lambda: print("New Button Clicked!"))
-new_button3.config(width=10, height=1, bg=arrow_buttons_bg,
-                   fg="white", activebackground="#1e2127")
-new_button3.pack(side='left')
 
 # Create the new button4
 new_button4 = tk.Button(button_frame, text="wiz commands",
