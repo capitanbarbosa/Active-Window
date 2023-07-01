@@ -340,14 +340,15 @@ def toggle_overrideredirect():
 
 def toggle_size():
     global current_size
-    if current_size == "1069x21":
-        root.geometry("900x500+0+973")
+    if current_size == "1000x467+1242+973":
+        root.geometry("1000x70+1242+1370")
         size_button.config(text="⬜")
-        current_size = "900x500"
+        current_size = "1000x70+1242+1370"
     else:
-        root.geometry("1000x72+0+1370")
+        root.geometry("1000x467+1242+973")  # Change the dimensions to the desired size
         size_button.config(text=" ◻️")
-        current_size = "1069x21"
+        current_size = "1000x467+1242+973"  # Update the current_size variable
+
 
 def update_timer():
     global pomodoro_running
@@ -459,7 +460,7 @@ root.overrideredirect(True)
 root.wm_attributes("-topmost", True)
 
 # Set the window size
-root.geometry("1000x70+0+1370")
+root.geometry("1000x70+1242+1370")
 # root.minsize(600,600)
 
 # # set initial position
@@ -593,58 +594,45 @@ options_box.pack(fill='both', expand=True)
 button_frame = tk.Frame(options_box, bg="#1e2127")
 button_frame.pack(side='left', padx=5)
 
-
-
 # Create the new button2
 new_button2 = tk.Button(button_frame, text="🪵Notion Log",
                         command=lambda: open_in_new_window("https://www.notion.so/wizbarbosa/614f2195f4ee4c9b8db9b232b8d53948?v=d598de318b1c4ea39cabf6ec573c1e44"))
 new_button2.config(width=15, height=1, bg=arrow_buttons_bg,
                    fg="white", activebackground="#1e2127")
-new_button2.pack(side='left')
-
-
-
+new_button2.pack(side='top')
 
 # Create the new button3
 new_button3 = tk.Button(button_frame, text="🔥Journal + Habits",
                         command=lambda: open_in_new_window("https://www.notion.so/wizbarbosa/033dbb8812b0406b9a4beb2315d6a918?v=2075c73b8d38482f8cfb2cc43fef1383"))
 new_button3.config(width=18, height=1, bg=arrow_buttons_bg,
                    fg="white", activebackground="#1e2127")
-new_button3.pack(side='left')
-
+new_button3.pack(side='top')
 
 # Create the new button with updated text
 project_text = current_project if current_project != "" else "No Project"
-project_button = tk.Button(button_frame, text=project_text,
+project_button = tk.Button(options_box, text=project_text,
                            command=lambda: menu.post(project_button.winfo_rootx(), project_button.winfo_rooty()))
 project_button.config(width=9, height=2, bg=arrow_buttons_bg,
                       fg="white", activebackground="#1e2127")
 project_button.pack(side='left')
 
-
 # Create the dropdown menu
 menu = tk.Menu(project_button, tearoff=0)
 
 # Add the projects to the dropdown menu
-# pareciera que cada projecto lo vuelven un boton con el commando select_project y fija ese.
-# ese es el valor con el que hay que actualiozar el current_project q no aaparece el malvado...
 for project in projects:
-    menu.add_command(
-        label=project, command=lambda p=project: select_project(p))
+    menu.add_command(label=project, command=lambda p=project: select_project(p))
 
 # Create the new button4
-new_button4 = tk.Button(button_frame, text="wiz commands",
+new_button4 = tk.Button(options_box, text="wiz commands",
                         command=lambda: print("New Button Clicked!"))
 new_button4.config(width=10, height=1, bg=arrow_buttons_bg,
                    fg="white", activebackground="#1e2127")
 new_button4.pack(side='left')
 
-
-
 # Add columns to paned window
 paned_window.add(props_box)
 paned_window.add(options_box)
-
 
 # Read the database and show the first result
 readDatabase(databaseId)
