@@ -20,7 +20,7 @@ import webbrowser
 #
 # ----------------------- DATA STRUCTURE - MODEL ---------------------
 #
-# Load the environment variables from the .env file
+# Load the environment variables from the .env file.
 load_dotenv()
 
 # Now you can access the environment variables as shown before
