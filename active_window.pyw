@@ -5,6 +5,8 @@ import json
 import time
 import threading
 from notion_client import Client
+from dotenv import load_dotenv
+import os
 # import pprint
 import re
 # import tkinter.simpledialog as simpledialog
@@ -18,11 +20,13 @@ import webbrowser
 #
 # ----------------------- DATA STRUCTURE - MODEL ---------------------
 #
+# Load the environment variables from the .env file
+load_dotenv()
 
-token = 'secret_Rs800ockGMwCwW6w7SY34v9m2QXtFCkeuqleS77U8Pb'
-# Set your Notion API integration token
-integration_token = 'secret_Rs800ockGMwCwW6w7SY34v9m2QXtFCkeuqleS77U8Pb'
-databaseId = '614f2195f4ee4c9b8db9b232b8d53948'
+# Now you can access the environment variables as shown before
+token = os.getenv('NOTION_API_TOKEN')
+logDatabaseId = os.getenv('LOG_DB_ID')
+
 name = ''
 note = ''
 
@@ -48,11 +52,11 @@ timer_mins = 0
 projects = []
 
 # Authenticate with Notion API using integration token
-notion = Client(auth=integration_token)
+notion = Client(auth=token)
 
-# Projects database
-database_id = "ef5fcadfa8144d22b2d613a5c86b9cf6"
-results = notion.databases.query(database_id).get("results")
+# # Projects database
+# database_id = "ef5fcadfa8144d22b2d613a5c86b9cf6"
+# results = notion.databases.query(database_id).get("results")
 # print(results)
 
 # Get the Name column contents
@@ -68,11 +72,11 @@ current_project = projects[0] if projects else ""
 #
 
 
-def readDatabase(databaseId):
+def readDatabase(logDatabaseId):
     global results, timer_duration
 
     # Query the database and get the results
-    results = notion.databases.query(databaseId).get("results")
+    results = notion.databases.query(logDatabaseId).get("results")
 
     # Loop through the list of results - Extraer listas de props.
     for result in results:
@@ -222,7 +226,7 @@ def update_database():
 
         # If the API request was successful, reload the database and update the results
         if response.status_code == 200:
-            readDatabase(databaseId)
+            readDatabase(logDatabaseId)
 
             # Change the button icon to a spinner
             a1_button.config(text="updating db...")
@@ -247,15 +251,15 @@ def update_database():
 def refresh_state():
     # Add code here to refresh the state of the contents pulled from Notion
     # For example, you can re-read the database and update the displayed results
-    readDatabase(databaseId)
+    readDatabase(logDatabaseId)
     show_result(current_index, current_project)
 
-def createPage(databaseId, headers):
+def createPage(logDatabaseId, headers):
 
     createUrl = 'https://api.notion.com/v1/pages'
 
     newPageData = {
-        "parent": {"database_id": databaseId},
+        "parent": {"database_id": logDatabaseId},
         "properties": {
             "Name": {
                 "title": [
@@ -282,7 +286,7 @@ def createPage(databaseId, headers):
             "number": timer_mins
         }
 
-    # print(databaseId, headers, name, note)
+    # print(logDatabaseId, headers, name, note)
     data = json.dumps(newPageData)
 
     res = requests.request("POST", createUrl, headers=headers, data=data)
@@ -515,7 +519,7 @@ frame.columnconfigure(2, weight=2)
 
 # Create add-plus button
 plus_button = tk.Button(
-    frame, text="+", command=lambda: createPage(databaseId, headers))
+    frame, text="+", command=lambda: createPage(logDatabaseId, headers))
 round_button(plus_button)
 plus_button.grid(row=0, column=0, padx=0, pady=0)
 
@@ -615,14 +619,14 @@ button_frame.pack(side='left', padx=5)
 
 # Create the new button2
 new_button2 = tk.Button(button_frame, text="🪵Notion Log",
-                        command=lambda: open_in_new_window("https://www.notion.so/wizbarbosa/614f2195f4ee4c9b8db9b232b8d53948?v=d598de318b1c4ea39cabf6ec573c1e44"))
+                        command=lambda: open_in_new_window(os.getenv('LOG_URL')))
 new_button2.config(width=15, height=1, bg=arrow_buttons_bg,
                    fg="white", activebackground="#1e2127")
 new_button2.pack(side='top')
 
 # Create the new button3
 new_button3 = tk.Button(button_frame, text="🔥Journal + Habits",
-                        command=lambda: open_in_new_window("https://www.notion.so/wizbarbosa/033dbb8812b0406b9a4beb2315d6a918?v=2075c73b8d38482f8cfb2cc43fef1383"))
+                        command=lambda: open_in_new_window(os.getenv('JOURNAL_URL')))
 new_button3.config(width=18, height=1, bg=arrow_buttons_bg,
                    fg="white", activebackground="#1e2127")
 new_button3.pack(side='top')
@@ -658,7 +662,7 @@ paned_window.add(props_box)
 paned_window.add(options_box)
 
 # Read the database and show the first result
-readDatabase(databaseId)
+readDatabase(logDatabaseId)
 # show_result(current_index, project)
 
 root.mainloop()
