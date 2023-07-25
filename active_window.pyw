@@ -591,6 +591,25 @@ options_box = tk.Text(paned_window, height=1.5, width=10,
 options_box.pack(fill='both', expand=True)
 
 # Create a frame to hold the new buttons
+new_button_frame = tk.Frame(options_box, bg="#1e2127")
+new_button_frame.pack(side='left', padx=5)
+
+# Create the new button with "☐" text
+new_button1 = tk.Button(new_button_frame, text="☐",
+                        command=lambda: props_box.insert(tk.INSERT, "☐"))  # replace the command with your own function
+new_button1.config(width=2, height=1, bg=arrow_buttons_bg,
+                   fg="white", activebackground="#1e2127")
+new_button1.pack(side='top')
+
+# Create the new button with "☑" text
+new_button2 = tk.Button(new_button_frame, text="☑",
+                        command=lambda: props_box.insert(tk.INSERT, "☑"))  # replace the command with your own function
+new_button2.config(width=2, height=1, bg=arrow_buttons_bg,
+                   fg="white", activebackground="#1e2127")
+new_button2.pack(side='top')
+
+
+# Create a frame to hold the new buttons
 button_frame = tk.Frame(options_box, bg="#1e2127")
 button_frame.pack(side='left', padx=5)
 
@@ -607,6 +626,10 @@ new_button3 = tk.Button(button_frame, text="🔥Journal + Habits",
 new_button3.config(width=18, height=1, bg=arrow_buttons_bg,
                    fg="white", activebackground="#1e2127")
 new_button3.pack(side='top')
+
+
+
+
 
 # Create the new button with updated text
 project_text = current_project if current_project != "" else "No Project"
