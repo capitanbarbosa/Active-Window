@@ -636,7 +636,7 @@ new_button3.pack(side='top')
 
 
 # Create the new button with updated text
-project_text = current_project if current_project != "" else "No Project"
+project_text = current_project if current_project != "" else "Wiz Labs"
 project_button = tk.Button(options_box, text=project_text,
                            command=lambda: menu.post(project_button.winfo_rootx(), project_button.winfo_rooty()))
 project_button.config(width=9, height=2, bg=arrow_buttons_bg,
