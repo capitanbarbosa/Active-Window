@@ -103,13 +103,14 @@ def readDatabase(logDatabaseId):
         if 'timer-mins' in result['properties']:
             timer_duration = result['properties']['timer-mins']['number']
         else:
-            timer_duration = 0 # set default value if column not present
+            timer_duration = 0  # set default value if column not present
 
     # Set the state of the tkinter Checkbox widget to match the "Active?" column value of the current page
     # checkbox.var.set(results[current_index]
     #                  ['properties']['Active?']['checkbox'])
 
     show_result(current_index, project)
+
 
 def show_result(index, project):
     global name, note, current_index, current_project, timer_duration
@@ -129,12 +130,10 @@ def show_result(index, project):
     if 'timer-mins' in page['properties']:
         timer_duration = page['properties']['timer-mins']['number']
     else:
-        timer_duration = 0 # set default value if column not present
-
+        timer_duration = 0  # set default value if column not present
 
     # Get the page_id
     page_id = page['id']
-
 
     props_box.delete('1.0', 'end')
     note_text = f"{note.strip()}"  # remove newline character
@@ -159,6 +158,7 @@ def show_result(index, project):
 
     select_project(results[current_index]['properties']
                    ['Project']['rich_text'])
+
 
 def update_database():
     global name, note, results, current_index, timer_mins, current_project, timer_duration
@@ -248,11 +248,13 @@ def update_database():
     thread = threading.Thread(target=api_call)
     thread.start()
 
+
 def refresh_state():
     # Add code here to refresh the state of the contents pulled from Notion
     # For example, you can re-read the database and update the displayed results
     readDatabase(logDatabaseId)
     show_result(current_index, current_project)
+
 
 def createPage(logDatabaseId, headers):
 
@@ -295,6 +297,7 @@ def createPage(logDatabaseId, headers):
     # print(res.text)
     update_database()
 
+
 def select_project(project):
     global current_project
     current_project = project
@@ -302,7 +305,7 @@ def select_project(project):
     if project:
         # Extract the text from the 'content' key using a regular expression
         match = re.search(r"'content': '(.+?)'", str(project))
-        print("match:",match)
+        print("match:", match)
         if match:
             current_project = match.group(1)
         # elif match is None:
@@ -312,12 +315,14 @@ def select_project(project):
     project_button.config(
         text=current_project if current_project else "No Project")
 
+
 def move_lock():
     if "🔒" in move_button["text"]:
         move_button.config(text="🔓")
     else:
         move_button.config(text="🔒")
     toggle_overrideredirect()
+
 
 def show_next(project):
     global current_index, name, note
@@ -328,6 +333,7 @@ def show_next(project):
     note = props_box.get("1.0", 'end').strip()
     show_result(current_index, project)
 
+
 def show_prev(project):
     global current_index, name, note
     current_index -= 1
@@ -337,10 +343,12 @@ def show_prev(project):
     note = props_box.get("1.0", 'end').strip()
     show_result(current_index, project)
 
+
 def toggle_overrideredirect():
     global overrideredirect_enabled
     overrideredirect_enabled = not overrideredirect_enabled
     root.overrideredirect(overrideredirect_enabled)
+
 
 def toggle_size():
     global current_size
@@ -349,7 +357,8 @@ def toggle_size():
         size_button.config(text="⬜")
         current_size = "1000x70+1242+1370"
     else:
-        root.geometry("1000x467+1242+973")  # Change the dimensions to the desired size
+        # Change the dimensions to the desired size
+        root.geometry("1000x467+1242+973")
         size_button.config(text=" ◻️")
         current_size = "1000x467+1242+973"  # Update the current_size variable
 
@@ -369,6 +378,7 @@ def update_timer():
 
         # Reset the button text and the pomodoro_running variable
         pomodoro_button.config(text="⏰")
+
 
 def toggle_timer():
     global pomodoro_running, pomodoro_button, start_time, timer_mins
@@ -434,17 +444,22 @@ def toggle_timer():
         t = threading.Thread(target=update_timer)
         t.start()
 
+
 def on_shift_key_press(event):
     # Change the background color of the framey frame and buttons when Shift key is pressed
     # framey.config(bg="#")  # Set the background color of framey frame to red
     for button in row.buttons:
-        button.config(bg="#31887A")  # Set the background color of buttons to red
+        # Set the background color of buttons to red
+        button.config(bg="#31887A")
+
 
 def on_shift_key_release(event):
     # Change the background color of the framey frame and buttons back to the default color when Shift key is released
     # framey.config(bg="#1e2127")  # Set the background color of framey frame to the default color
     for button in row.buttons:
-        button.config(bg="#3f4652")  # Set the background color of buttons to the default color
+        # Set the background color of buttons to the default color
+        button.config(bg="#3f4652")
+
 
 def open_in_new_window(url):
     webbrowser.open_new(url)
@@ -464,7 +479,7 @@ root.overrideredirect(True)
 root.wm_attributes("-topmost", True)
 
 # Set the window size
-root.geometry("1000x70+1242+1370")
+root.geometry("1000x70-1077-863")
 # root.minsize(600,600)
 
 # # set initial position
@@ -485,7 +500,6 @@ root.bind_all("<Control-Key>", on_shift_key_press)
 root.bind_all("<KeyRelease-Control_L>", on_shift_key_release)
 
 
-
 # Create a function to round the edges of buttons
 # estilo universal de botones.... *****
 def round_button(widget):
@@ -496,13 +510,19 @@ def round_button(widget):
     widget.config(padx=0)
     widget.config(highlightthickness=1, highlightbackground='white')
 # keeb shortcuts -> ctrl + k, ctrl up and down
+
+
 def on_key_press(event):
     if event.state == 4 and event.keysym == "Return":
         a1_button.invoke()
         print("ctrl enter pressed")
+
+
 def handle_ctrl_up(event):
     # Handle Ctrl + Up keypress here
     a3_button.invoke()
+
+
 def handle_ctrl_down(event):
     # Handle Ctrl + Down keypress here
     pass
@@ -540,7 +560,8 @@ round_button(move_button)
 move_button.grid(row=1, column=2, padx=0, pady=0)
 
 # Create pomodoro button
-pomodoro_button = tk.Button(frame, text="⏰", command=toggle_timer, fg="#808080")
+pomodoro_button = tk.Button(
+    frame, text="⏰", command=toggle_timer, fg="#808080")
 round_button(pomodoro_button)
 pomodoro_button.grid(row=0, column=1, padx=0, pady=0)
 
@@ -600,14 +621,16 @@ new_button_frame.pack(side='left', padx=5)
 
 # Create the new button with "☐" text
 new_button1 = tk.Button(new_button_frame, text="☐",
-                        command=lambda: props_box.insert(tk.INSERT, "☐"))  # replace the command with your own function
+                        # replace the command with your own function
+                        command=lambda: props_box.insert(tk.INSERT, "☐"))
 new_button1.config(width=2, height=1, bg=arrow_buttons_bg,
                    fg="white", activebackground="#1e2127")
 new_button1.pack(side='top')
 
 # Create the new button with "☑" text
 new_button2 = tk.Button(new_button_frame, text="☑",
-                        command=lambda: props_box.insert(tk.INSERT, "☑"))  # replace the command with your own function
+                        # replace the command with your own function
+                        command=lambda: props_box.insert(tk.INSERT, "☑"))
 new_button2.config(width=2, height=1, bg=arrow_buttons_bg,
                    fg="white", activebackground="#1e2127")
 new_button2.pack(side='top')
@@ -632,9 +655,6 @@ new_button3.config(width=18, height=1, bg=arrow_buttons_bg,
 new_button3.pack(side='top')
 
 
-
-
-
 # Create the new button with updated text
 project_text = current_project if current_project != "" else "Wiz Labs"
 project_button = tk.Button(options_box, text=project_text,
@@ -648,7 +668,8 @@ menu = tk.Menu(project_button, tearoff=0)
 
 # Add the projects to the dropdown menu
 for project in projects:
-    menu.add_command(label=project, command=lambda p=project: select_project(p))
+    menu.add_command(
+        label=project, command=lambda p=project: select_project(p))
 
 # Create the new button4
 new_button4 = tk.Button(options_box, text="wiz commands",
