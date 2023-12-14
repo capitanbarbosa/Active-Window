@@ -352,15 +352,15 @@ def toggle_overrideredirect():
 
 def toggle_size():
     global current_size
-    if current_size == "1000x467+1242+973":
-        root.geometry("1000x70+1242+1370")
+    if current_size == "1000x467-1077-863":
+        root.geometry("1000x70-1077-863")
         size_button.config(text="⬜")
-        current_size = "1000x70+1242+1370"
+        current_size = "1000x70-1077-863"
     else:
         # Change the dimensions to the desired size
-        root.geometry("1000x467+1242+973")
+        root.geometry("1000x467-1077-863")
         size_button.config(text=" ◻️")
-        current_size = "1000x467+1242+973"  # Update the current_size variable
+        current_size = "1000x467-1077-863"  # Update the current_size variable
 
 
 def update_timer():
