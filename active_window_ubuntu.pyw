@@ -316,12 +316,31 @@ def select_project(project):
         text=current_project if current_project else "No Project")
 
 
+# def move_lock():
+#     if "🔒" in move_button["text"]:
+#         move_button.config(text="🔓")
+#     else:
+#         move_button.config(text="🔒")
+#     toggle_overrideredirect()
+
+
 def move_lock():
+    global overrideredirect_enabled
     if "🔒" in move_button["text"]:
         move_button.config(text="🔓")
+        root.overrideredirect(False)
     else:
         move_button.config(text="🔒")
-    toggle_overrideredirect()
+        root.overrideredirect(True)
+
+    # Force the window to redraw
+    root.withdraw()  # Hide the window
+    root.update()    # Update window state
+    root.deiconify() # Show the window again
+
+    # This ensures the window's topmost state is correctly reapplied if needed
+    root.attributes('-topmost', True)
+
 
 
 def show_next(project):
@@ -352,15 +371,15 @@ def toggle_overrideredirect():
 
 def toggle_size():
     global current_size
-    if current_size == "1000x467-1077-863":
-        root.geometry("1000x120-1077-863")
+    if current_size == "1000x467+3100+2180":
+        root.geometry("1000x120+3100+2180")
         size_button.config(text="⬜")
-        current_size = "1000x120-1077-863"
+        current_size = "1000x120+3100+2180"
     else:
         # Change the dimensions to the desired size
-        root.geometry("1000x467-1077-863")
+        root.geometry("1000x467+3100+2180")
         size_button.config(text=" ◻️")
-        current_size = "1000x467-1077-863"  # Update the current_size variable
+        current_size = "1000x467+3100+2180"  # Update the current_size variable
 
 
 def update_timer():
@@ -479,7 +498,7 @@ root.overrideredirect(True)
 root.wm_attributes("-topmost", True)
 
 # Set the window size
-root.geometry("1000x120-1077-863")
+root.geometry("1000x120+3100+2180")
 # root.minsize(600,600)
 
 # # set initial position
@@ -544,7 +563,7 @@ round_button(plus_button)
 plus_button.grid(row=0, column=0, padx=0, pady=0)
 
 # Create update page button a1
-a1_button = tk.Button(frame, text="💾", command=update_database)
+a1_button = tk.Button(frame, text="⎙", command=update_database)
 round_button(a1_button)
 a1_button.grid(row=1, column=0, padx=0, pady=0)
 
@@ -555,13 +574,13 @@ round_button(size_button)
 size_button.grid(row=0, column=2, padx=0, pady=0)
 
 # Create move/lock button
-move_button = tk.Button(frame, text="🔒", command=move_lock)
+move_button = tk.Button(frame, text="ꗃ", command=move_lock)
 round_button(move_button)
 move_button.grid(row=1, column=2, padx=0, pady=0)
 
 # Create pomodoro button
 pomodoro_button = tk.Button(
-    frame, text="⏰", command=toggle_timer, fg="#808080")
+    frame, text="⧖", command=toggle_timer, fg="#808080")
 round_button(pomodoro_button)
 pomodoro_button.grid(row=0, column=1, padx=0, pady=0)
 
