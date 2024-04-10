@@ -316,30 +316,30 @@ def select_project(project):
         text=current_project if current_project else "No Project")
 
 
-# def move_lock():
-#     if "🔒" in move_button["text"]:
-#         move_button.config(text="🔓")
-#     else:
-#         move_button.config(text="🔒")
-#     toggle_overrideredirect()
-
-
 def move_lock():
-    global overrideredirect_enabled
     if "🔒" in move_button["text"]:
         move_button.config(text="🔓")
-        root.overrideredirect(False)
     else:
         move_button.config(text="🔒")
-        root.overrideredirect(True)
+    toggle_overrideredirect()
 
-    # Force the window to redraw
-    root.withdraw()  # Hide the window
-    root.update()    # Update window state
-    root.deiconify() # Show the window again
 
-    # This ensures the window's topmost state is correctly reapplied if needed
-    root.attributes('-topmost', True)
+# def move_lock():
+#     global overrideredirect_enabled
+#     if "🔒" in move_button["text"]:
+#         move_button.config(text="🔓")
+#         root.overrideredirect(False)
+#     else:
+#         move_button.config(text="🔒")
+#         root.overrideredirect(True)
+
+#     # Force the window to redraw
+#     root.withdraw()  # Hide the window
+#     root.update()    # Update window state
+#     root.deiconify() # Show the window again
+
+#     # This ensures the window's topmost state is correctly reapplied if needed
+#     root.attributes('-topmost', True)
 
 
 
@@ -371,15 +371,15 @@ def toggle_overrideredirect():
 
 def toggle_size():
     global current_size
-    if current_size == "1000x467+3100+2180":
-        root.geometry("1000x120+3100+2180")
+    if current_size == "1400x600+4100+1700":
+        root.geometry("1200x120+4300+2180")
         size_button.config(text="⬜")
-        current_size = "1000x120+3100+2180"
+        current_size = "1200x120+4300+2180"
     else:
         # Change the dimensions to the desired size
-        root.geometry("1000x467+3100+2180")
+        root.geometry("1400x600+4100+1700")
         size_button.config(text=" ◻️")
-        current_size = "1000x467+3100+2180"  # Update the current_size variable
+        current_size = "1400x600+4100+1700"  # Update the current_size variable
 
 
 def update_timer():
@@ -498,7 +498,7 @@ root.overrideredirect(True)
 root.wm_attributes("-topmost", True)
 
 # Set the window size
-root.geometry("1000x120+3100+2180")
+root.geometry("1200x120+4300+2180")
 # root.minsize(600,600)
 
 # # set initial position
