@@ -19,3 +19,6 @@ python-dotenv
 pyautogui
 python3-tk
 tk
+notion_client
+
+# sudo apt install python3-tk
