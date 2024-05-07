@@ -1,8 +1,8 @@
 import os
 import tkinter as tk
 from tkinter import messagebox
-from notion_client import Client
 import requests
+from notion_client import Client  # Importing the Notion client
 from dotenv import load_dotenv
 
 # Load the environment variables from the .env file
@@ -53,7 +53,7 @@ def show_result(index):
         note_text.delete(1.0, tk.END)
         note_text.insert(tk.END, note)
 
-def update_database():
+def update_database(event=None):
     page_id = results[current_index]['id']
     note = note_text.get(1.0, tk.END).strip()
     data = {
@@ -67,13 +67,13 @@ def update_database():
     if response.status_code == 200:
         read_database(logDatabaseId)
 
-def next_entry():
+def next_entry(event=None):
     global current_index
     if current_index < len(results) - 1:
         current_index += 1
         show_result(current_index)
 
-def previous_entry():
+def previous_entry(event=None):
     global current_index
     if current_index > 0:
         current_index -= 1
@@ -146,6 +146,15 @@ resize_button.pack(fill=tk.X)
 
 empty_button = tk.Button(misc_button_frame, text="", width=2, bg='#C6C6C6')  # Empty button placeholder
 empty_button.pack(fill=tk.X)
+
+# Bind Ctrl+Enter to update_database function
+root.bind("<Control-Return>", update_database)
+
+# Bind Ctrl+Up Arrow to previous_entry function
+root.bind("<Control-Up>", previous_entry)
+
+# Bind Ctrl+Down Arrow to next_entry function
+root.bind("<Control-Down>", next_entry)
 
 # Initialize the application by reading the database
 read_database(logDatabaseId)
