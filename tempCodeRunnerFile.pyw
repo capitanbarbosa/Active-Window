@@ -33,6 +33,9 @@ root.title("Notion Interface")
 current_size = "1200x120+4300+2180"
 root.geometry(current_size)  # Set initial geometry based on current_size
 
+# Remove title bar
+root.overrideredirect(True)
+
 # Define functions interacting with Notion API
 def read_database(database_id):
     global results, current_index
