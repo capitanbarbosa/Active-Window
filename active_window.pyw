@@ -353,9 +353,9 @@ def toggle_overrideredirect():
 def toggle_size():
     global current_size
     if current_size == "1000x467+0+975":
-        root.geometry("1000x69+0+1372")
+        root.geometry("1000x61+0+1380")
         size_button.config(text="⬜")
-        current_size = "1000x69+0+1372"
+        current_size = "1000x61+0+1380"
     else:
         # Change the dimensions to the desired size
         root.geometry("1000x467+0+975")
@@ -478,12 +478,9 @@ root.overrideredirect(True)
 # Set the window to always be on top
 root.wm_attributes("-topmost", True)
 
-# Set the window size
-root.geometry("1000x69+0+1372")
-# root.minsize(600,600)
+# Set the initial window size
+root.geometry("1000x61+0+1380")
 
-# # set initial position
-# root.geometry("+0+1370")
 
 # Set the title of the window
 root.title("Active Window 🚀🌙⭐")
