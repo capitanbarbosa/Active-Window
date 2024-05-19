@@ -352,15 +352,15 @@ def toggle_overrideredirect():
 
 def toggle_size():
     global current_size
-    if current_size == "1000x467-1077-863":
-        root.geometry("1000x120-1077-863")
+    if current_size == "1000x467+0+975":
+        root.geometry("1000x69+0+1372")
         size_button.config(text="⬜")
-        current_size = "1000x120-1077-863"
+        current_size = "1000x69+0+1372"
     else:
         # Change the dimensions to the desired size
-        root.geometry("1000x467-1077-863")
+        root.geometry("1000x467+0+975")
         size_button.config(text=" ◻️")
-        current_size = "1000x467-1077-863"  # Update the current_size variable
+        current_size = "1000x467+0+975"  # Update the current_size variable
 
 
 def update_timer():
@@ -479,7 +479,7 @@ root.overrideredirect(True)
 root.wm_attributes("-topmost", True)
 
 # Set the window size
-root.geometry("1000x120-1077-863")
+root.geometry("1000x69+0+1372")
 # root.minsize(600,600)
 
 # # set initial position
